@@ -263,36 +263,36 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
     chassis.brake();
 }
 
-void arc_right(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_drive_pid){
-    bool chain;
-    if (chainPos == 0){
-        chain = false;
-    } else{
-        chain = true;
-        double trueTheta = target;
-        target = target + chainPos;
-    }
+// void arc_right(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_drive_pid){
+//     bool chain;
+//     if (chainPos == 0){
+//         chain = false;
+//     } else{
+//         chain = true;
+//         double trueTheta = target;
+//         target = target + chainPos;
+//     }
 
-    double rightArcLength = (target/360)*2*M_PI*(radius-275);
-    double leftArcLength = (target/360)*2*M_PI*(radius+275);
+//     double rightArcLength = (target/360)*2*M_PI*(radius-275);
+//     double leftArcLength = (target/360)*2*M_PI*(radius+275);
 
-    double speedProp = rightArcLength/leftArcLength; //will be a fraction less than zero bc we are arcing to the right
+//     double speedProp = rightArcLength/leftArcLength; //will be a fraction less than zero bc we are arcing to the right
 
-    chassis.tare_position();
-    chassis.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
+//     chassis.tare_position();
+//     chassis.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
 
-    double init_heading = imu.get_heading();
+//     double init_heading = imu.get_heading();
 
-    while (true){
-        //wrap the init heading to 180,-180
-        if (init_heading > 180){
-            init_heading-=360;
-        }
+//     while (true){
+//         //wrap the init heading to 180,-180
+//         if (init_heading > 180){
+//             init_heading-=360;
+//         }
 
-        double currentRightPos = (FR.get_position() + MR.get_position() + BR.get_position())/3;
-        double currentLeftPos = (FL.get_position() + ML.get_position() + BL.get_position())/3;
+//         double currentRightPos = (FR.get_position() + MR.get_position() + BR.get_position())/3;
+//         double currentLeftPos = (FL.get_position() + ML.get_position() + BL.get_position())/3;
 
-        double right_error = rightArcLength - currentRightPos;
-        double left_error = leftArcLength - currentLeftPos;
-    }
-}
+//         double right_error = rightArcLength - currentRightPos;
+//         double left_error = leftArcLength - currentLeftPos;
+//     }
+// }
