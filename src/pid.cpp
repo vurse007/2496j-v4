@@ -57,7 +57,7 @@ double PID::calculate(double error, double speed_limit){
 }
 
 bool PID::settled(double threshold, double time){
-    if (this->error < threshold){
+    if (fabs(this->error) < threshold){
         count++;
     }
 
