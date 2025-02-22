@@ -137,6 +137,8 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
     }
 
+
+
     chassis.tare_position();
     chassis.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
     pid->reset_PID();
@@ -172,7 +174,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         rchassis.move(speed - headingCorrection);
 
         //debugging with printing error to controller screen
-        con.print(0,0, "prt: %lf", driveTimer.getTime());
+        con.print(0,0, "prt: %lf", driveError);
         
         //settling
         if (pid->settled(10, 500)){
@@ -243,7 +245,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
 
         //ouput speeds
         lchassis.move(speed);
-        rchassis.move(speed);
+        rchassis.move(-speed);
 
         //debugging with printing error to controller screen
         con.print(0,0, "error: %lf", headingError);

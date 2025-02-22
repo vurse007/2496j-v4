@@ -210,12 +210,28 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	PID test(0.8,0,0,1000,1000,127);
-	drive(500, M_TICKS, 5000, 0, std::nullopt, &test);
+	PID driveStraight(0.5,0,300,1000,1000,70);   //drive straight
+	//drive(1000, M_TICKS, 5000, 0, std::nullopt, &test);
+	PID dirveMogo(1.2,0,0.1,1000,1000,127);      //drive mogo
+	// mogo.set_value(true);
+	// delay(300);
+	// drive(1000, M_TICKS, 5000, 0, std::nullopt, &test);
+	PID turnNormal(13,0,0.85,1000,1000,127);    // turnPID at ALL VALUES
+	// turn(180, 15000,0,std::nullopt, &test);
+	PID turnMogo(12,0.2,1,1000,1000,127);  // turnPIDMogo up to 120
+	drive(-4000, M_TICKS, 5000, 0,  std::nullopt, &driveStraight);
+	delay(300);
+	mogo.set_value(true);
+	turn(150,15000,0,std::nullopt,&turnMogo);	
+	  
+	//turn(150, 15000,0,std::nullopt, &test);
+
+	
 }
 
 /**
- * Runs the operator control code. This function will be started in its own task
+ * Runs the operator control code. This function will be sta
+ * rted in its own task
  * with the default priority and stack size whenever the robot is enabled via
  * the Field Management System or the VEX Competition Switch in the operator
  * control mode.

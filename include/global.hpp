@@ -15,7 +15,7 @@ namespace glb{
 
     #define P_MOGO 'A'
     #define P_INTAKE_LIFT 'B'
-    #define P_DOINKER 'C'
+    #define P_DOINKER 'D'
 
     #define P_IMU 20
     #define P_LDB_ROTATION 20
