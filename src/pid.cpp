@@ -177,7 +177,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         con.print(0,0, "prt: %lf", driveError);
         
         //settling
-        if (pid->settled(10, 500)){
+        if (pid->settled(10,100)){
             break;
         }
 
@@ -298,3 +298,168 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
 //         double left_error = leftArcLength - currentLeftPos;
 //     }
 // }
+
+void cs_eject_blue(){
+    int cnt=0;
+    colorsort.set_led_pwm(70);
+    
+    int cnt2=0;
+    bool detect = false;
+    while(con.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+        //con.print(0,0, "error: %lf", colorsort.get_hue());
+    
+        if (con.get_digital(pros::E_CONTROLLER_DIGITAL_R1) ){
+            
+            if (colorsort.get_hue()> 160 && colorsort.get_hue()<240 && colorsort.get_proximity()>100){
+                detect = true;
+                con.print(0,0, "eor: %lf", colorsort.get_hue());
+            }
+            else{
+                detect=false;
+            }
+                
+            
+            if (detect == true){
+                cnt++;
+                
+            }
+            if (cnt >= 9000){
+                detect = false;
+                cnt++;
+                intake.move(-127);
+                
+                cnt2++;
+            }
+            if (cnt2 >=6000){
+                intake.move(127);
+                //intake.move(127);
+                cnt2 = 0;
+                cnt = 0;
+            }
+            
+        }
+        else intake.move(0);
+       
+        
+    }
+}
+void cs_eject_red(){
+    int cnt=0;
+    colorsort.set_led_pwm(70);
+    
+    int cnt2=0;
+    bool detect = false;
+    while(con.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+        //con.print(0,0, "error: %lf", colorsort.get_hue());
+    
+        if (con.get_digital(pros::E_CONTROLLER_DIGITAL_R1) ){
+            
+            if ((colorsort.get_hue()> 320 || colorsort.get_hue()<30) && colorsort.get_proximity()>100){
+                detect = true;
+                con.print(0,0, "oooga: %lf", colorsort.get_hue());
+            }
+           
+                
+            
+            if (detect == true){
+                cnt++;
+                
+            }
+            if (cnt >= 9000){
+                detect = false;
+                cnt++;
+                intake.move(-127);
+                
+                cnt2++;
+            }
+            if (cnt2 >=5000){
+                intake.move(127);
+                //intake.move(127);
+                cnt2 = 0;
+                cnt = 0;
+            }
+        }
+        else intake.move(0);
+        
+    }
+}
+void csauto_eject_red(){
+    int cnt=0;
+    colorsort.set_led_pwm(70);
+    
+    int cnt2=0;
+    bool detect = false;
+    while(true){
+        //con.print(0,0, "error: %lf", colorsort.get_hue());
+    
+        if (true) {
+            int tmp = colorsort.get_hue();
+            if ((tmp> 320 || tmp<30) && colorsort.get_proximity()>100){
+                detect = true;
+                con.print(0,0, "ror: %lf", tmp);
+            }
+           
+                
+            
+            if (detect == true){
+                cnt++;
+                
+            }
+            if (cnt >= 9000){
+                detect = false;
+                cnt++;
+                intake.move(-127);
+                
+                cnt2++;
+            }
+            if (cnt2 >=5000){
+                intake.move(127);
+                //intake.move(127);
+                cnt2 = 0;
+                cnt = 0;
+            }
+        }
+        else intake.move(0);
+        
+    }
+}
+void csauto_eject_blue(){
+    int cnt=0;
+    colorsort.set_led_pwm(70);
+    
+    int cnt2=0;
+    bool detect = false;
+    while(true){
+        //con.print(0,0, "error: %lf", colorsort.get_hue());
+    
+        if (true) {
+            
+            if (colorsort.get_hue()> 160 && colorsort.get_hue()<240 && colorsort.get_proximity()>100){
+                detect = true;
+                //con.print(0,0, "error: %lf", colorsort.get_hue());
+            }
+           
+                
+            
+            if (detect == true){
+                cnt++;
+                
+            }
+            if (cnt >= 9000){
+                detect = false;
+                cnt++;
+                intake.move(-127);
+                
+                cnt2++;
+            }
+            if (cnt2 >=5000){
+                intake.move(127);
+                //intake.move(127);
+                cnt2 = 0;
+                cnt = 0;
+            }
+        }
+        else intake.move(0);
+        
+    }
+}
