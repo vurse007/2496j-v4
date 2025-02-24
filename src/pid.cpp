@@ -177,7 +177,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         con.print(0,0, "prt: %lf", driveError);
         
         //settling
-        if (pid->settled(10,100)){
+        if (pid->settled(40,400)){
             break;
         }
 
@@ -405,7 +405,7 @@ void csauto_eject_red(){
                 cnt++;
                 
             }
-            if (cnt >= 9000){
+            if (cnt >= 6800){
                 detect = false;
                 cnt++;
                 intake.move(-127);
@@ -445,7 +445,7 @@ void csauto_eject_blue(){
                 cnt++;
                 
             }
-            if (cnt >= 9000){
+            if (cnt >= 6800){
                 detect = false;
                 cnt++;
                 intake.move(-127);

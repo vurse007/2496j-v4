@@ -18,7 +18,7 @@ namespace glb{
     #define P_DOINKER 'D'
 
     #define P_IMU 20
-    #define P_LDB_ROTATION 20
+    #define P_LDB_ROTATION 6
     #define P_AUTOCLAMP 19
     #define P_COLORSORT 7
     #define P_X_POD 16

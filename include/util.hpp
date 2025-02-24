@@ -43,8 +43,8 @@ double inches_to_chassis_ticks(double inches, double wheel_diameter = 3.25, doub
 
 //lady brown macro util
 extern bool lbPID;
-extern double ladyBrownTarget;
-extern double ladyBrownPos;
+extern double ladyBrownCorrectPosition;
+extern double ladyBrownCurrentPosition;
 extern PID ladyBrownPID;
 void ladyBrownTask();
 
