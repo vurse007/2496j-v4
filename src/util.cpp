@@ -66,6 +66,7 @@ tPoly turnKDTPOLY({0});
 tPoly turnMogoKDTPOLY({0});
 tPoly driveKDTPOLY({0});
 tPoly driveMogoKDTPOLY({0});
+tPoly arcTimeoutTPOLY({0});
 
 
 //pid util:

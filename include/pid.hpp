@@ -10,7 +10,9 @@
 #define M_INCHES "passed as inches"
 #define M_TILES "passed as tiles"
 #define M_TICKS "passed as ticks"
-#define M_MOGO &default_drive_mogo_pid
+#define M_DRIVE_MOGO &default_drive_mogo_pid
+#define M_TURN_MOGO &default_turn_mogo_pid
+#define M_ARC_MOGO &default_arc_mogo_pid
 
 
 // PID Class
@@ -51,8 +53,10 @@ extern PID default_drive_mogo_pid;
 extern PID default_turn_pid;
 extern PID default_turn_mogo_pid;
 extern PID heading_correction_pid;
-extern PID right_arc_pid;
-extern PID left_arc_pid;
+extern PID default_arc_pid;
+extern PID default_arc_mogo_pid;
+extern PID near_drive_target;
+extern PID near_turn_target;
 
 // Function declaration for drive
 void drive(double target, std::string_view units = M_TICKS, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_drive_pid);
@@ -61,4 +65,4 @@ void drive(double target, std::string_view units = M_TICKS, std::optional<double
 void turn(double target, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_turn_pid);
 
 //declarations for functions of arc turns
-void arc_right(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_drive_pid);
+void arc_right(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_arc_pid);

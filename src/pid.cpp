@@ -122,8 +122,10 @@ PID default_drive_mogo_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 PID default_turn_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 PID default_turn_mogo_pid(0.0,0.0,0.0,0.0,0.0);
 PID heading_correction_pid(0.0, 0.0, 0.0, 0.0, 0.0);
-PID right_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
-PID left_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
+PID default_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
+PID default_arc_mogo_pid(0.0, 0.0, 0.0, 0.0, 0.0);
+PID near_drive_target(0.0, 0.0, 0.0, 0.0, 0.0);
+PID near_turn_target(0.0, 0.0, 0.0, 0.0, 0.0);
 
 void drive(double target, std::string_view units, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, PID* pid){
 
@@ -296,12 +298,32 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
 
 void arc_right(double target, double radius, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, PID* pid){
     bool chain;
+    double trueTheta;
     if (chainPos == 0){
         chain = false;
     } else{
         chain = true;
-        double trueTheta = target;
+        trueTheta = target;
         target = target + chainPos;
+    }
+
+    timer arcTimer(-1);
+    if (timeout.has_value()){
+        arcTimer.set_target(timeout.value());
+    }
+    else {
+        double tPolyTimeoutOutput = arcTimeoutTPOLY.evaluate(target);
+        arcTimer.set_target(tPolyTimeoutOutput);
+    }
+
+    //for tpoly kd values
+    if (pid == &default_arc_pid){ //if default is used, nothing special requested
+        double tpolyKDOutput = arcKDTPOLY.evaluate(target);
+        pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
+    }
+    else if (pid == &default_arc_mogo_pid){
+        double tpolyKDOutput = arcMogoKDTPOLY.evaluate(target);
+        pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
     }
 
     double rightArcLength = (target/360)*2*M_PI*(radius-275);
@@ -315,6 +337,9 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
     double init_heading = imu.get_heading();
 
     pid->reset_PID();
+    heading_correction_pid.reset_PID();
+    
+    arcTimer.start();
 
     while (true){
         //wrap the init heading to 180,-180
@@ -342,6 +367,11 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
         lchassis.move(pid->calculate(left_error, speed_limit.value_or(127)) + heading_correction_pid.calculate(headingCorrectionError));
         rchassis.move(speedProp*pid->calculate(left_error, speed_limit.value_or(127)) - heading_correction_pid.calculate(headingCorrectionError));
 
-        if (left_arc_pid.settled(20, 500) && right_arc_pid.settled(20,500)) break;
+        if (default_arc_pid.settled(20,500)) break;
+
+        if (chain == true && fabs(heading - init_heading) >= trueTheta) break;
+
+        pros::delay(5);
     }
+    chassis.brake();
 }

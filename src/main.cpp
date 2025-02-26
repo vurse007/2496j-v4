@@ -175,9 +175,19 @@ void initialize() {
 	//pros::Task cs_eject_blueTask(cs_eject_blue);
 	//pros:: Task csauto_eject_redTask(csauto_eject_red);
 	//pros:: Task csauto_eject_blueTask(csauto_eject_blue);
+
 	//updating PID objects
-	default_drive_pid.update_constants(10, 100, 10, 300, 10000, 127);
-	heading_correction_pid.update_constants(1, 0, 0, 15, 10000, 127);
+	default_drive_pid.update_constants(0.5,0,400,1000,1000,70);
+	default_drive_mogo_pid.update_constants(1.2,0,0.1,1000,1000,127);
+	heading_correction_pid.update_constants(13,0,0.85,1000,1000,127);
+	default_turn_pid.update_constants(13, 0, 0.85, 1000, 1000, 127);
+	default_turn_mogo_pid.update_constants(12, 0.2, 1, 1000, 1000, 127);
+	
+
+PID right_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
+PID left_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
+PID near_drive_target(0.0, 0.0, 0.0, 0.0, 0.0);
+PID near_turn_target(0.0, 0.0, 0.0, 0.0, 0.0);
 
 	//updating tPoly objects
 	driveTimeoutTPOLY.update_coefficients({5000});
@@ -217,7 +227,7 @@ void competition_initialize() {}
  */
 void autonomous() {
 	PID driveStraight(0.5,0,400,1000,1000,70); //drive straight
-	PID driveStraightSlow(0.6,0,120,1000,1000,70);   //for goal clamp
+	//PID driveStraightSlow(0.6,0,120,1000,1000,70);   //for goal clamp - no need just pass in a speedlimit
 	PID driveMogo(1.2,0,0.1,1000,1000,127);      //drive mogo
 	PID turnNormal(13,0,0.85,1000,1000,127);    // turnPID at ALL VALUES
 	PID turnMogo(12,0.2,1,1000,1000,127);  // turnPIDMogo up to 120
