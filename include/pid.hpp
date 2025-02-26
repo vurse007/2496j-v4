@@ -24,6 +24,7 @@ public:
     double prevError = 0;
     double totalError = 0;
     double derivative = 0;
+    std::string NAME = "drive";
 
     double prevSpeed = 0;
     double slew;
@@ -39,7 +40,7 @@ public:
 
     PID(double kP, double kI, double kD, double integralThreshold, double maxIntegral, double slew = 127);
 
-    double calculate(double error, double speed_limit = 127);
+    double calculate(double error, double speed_limit = 127, std::string NAME = "drive");
     bool settled(double threshold, double time);
     void update_constants(std::optional<double> kP = std::nullopt, std::optional<double> kI = std::nullopt, std::optional<double> kD = std::nullopt, std::optional<double> integralThreshold = std::nullopt, std::optional<double> maxIntegral = std::nullopt, std::optional<double> slew = std::nullopt);
     void reset_PID();

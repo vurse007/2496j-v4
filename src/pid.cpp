@@ -23,7 +23,9 @@ PID::PID(double kP, double kI, double kD, double integralThreshold, double maxIn
     this->slew = slew;
 }
 
-double PID::calculate(double error, double speed_limit){
+
+
+double PID::calculate(double error, double speed_limit, std::string NAME){
     //proportional
     this->error = error;
 
@@ -40,7 +42,31 @@ double PID::calculate(double error, double speed_limit){
     this->derivative = (this->error - this->prevError)*200; //scale with sampling frequency
 
     //calculate speed
-    this->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
+    if(NAME=="drive")
+    {
+        if(fabs(error)<50)
+        {
+            this->speed = (this->kP*1.7*this->error) + (this->kI*this->totalError) ;
+        }
+        else 
+        {
+            this->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
+        }
+    }
+    else
+    {
+        if(fabs(error)<5)
+        {
+            this->speed = (this->kP*3*this->error) + (this->kI*this->totalError) +  (this->kD*this->derivative);
+        }
+        else 
+        {
+            this->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
+        }
+    }
+    
+    //->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
+
     double deltaSpeed = this->speed - this->prevSpeed;
     if (deltaSpeed > this->slew){
         this->speed = this->prevSpeed + this->slew;
@@ -55,6 +81,7 @@ double PID::calculate(double error, double speed_limit){
 
     return this->speed;
 }
+
 
 bool PID::settled(double threshold, double time){
     if (fabs(this->error) < threshold){
@@ -155,7 +182,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
     while (true){
         //force timeout check
         if (driveTimer.targetReached()){
-            break;
+            //break;
         }
 
         //heading correction
@@ -169,7 +196,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         //drive calculations
         double currentpos = (FR.get_position() + FL.get_position() + MR.get_position() + ML.get_position() + BR.get_position() + BL.get_position())/6;
         double driveError = target - currentpos;
-        double speed = pid->calculate(driveError, speed_limit.value_or(127));
+        double speed = pid->calculate(driveError, speed_limit.value_or(127), "drive");
 
         //ouput speeds
         lchassis.move(speed + headingCorrection);
@@ -179,13 +206,13 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         con.print(0,0, "prt: %lf", driveError);
         
         //settling
-        if (pid->settled(40,400)){
-            break;
+        if (pid->settled(5,400)){
+            //break;
         }
 
         //chaining movements
         if (chain == true && fabs(driveError) <= chainPos){
-            break;
+            //break;
         }
 
         pros::delay(5);
@@ -234,7 +261,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
     while (true){
         //force timeout check
         if (turnTimer.targetReached()){
-            break;
+            //break;
         }
 
         //turn logic
@@ -243,7 +270,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         if (headingError > 180) {
             headingError -= 360;
         }
-        double speed = pid->calculate(headingError, speed_limit.value_or(127));
+        double speed = pid->calculate(headingError, 127, "turn");
 
         //ouput speeds
         lchassis.move(speed);
@@ -254,12 +281,12 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         
         //settling
         if (pid->settled(5, 500)){
-            break;
+            //break;
         }
 
         //chaining movements
         if (chain == true && fabs(headingError) <= chainPos){
-            break;
+            //break;
         }
 
         pros::delay(5);
