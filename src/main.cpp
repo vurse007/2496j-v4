@@ -224,6 +224,18 @@ void autonomous() {
 	PID jitterFree(0.3, 0, 0, 1000, 100, 70);
 
 
+	//PID test(1.7,0,0.18,1000,1000,70); // 2000
+	//PID test(1.7,0,0.13,1000,1000,70); // 1000
+	//PID test(1.7,0,0.12,1000,1000,70); // 500
+	//PID test(1.7,0,0.27,1000,1000,70); // 250
+
+
+ 	PID test(1,0,0,1000,1000,127);
+
+
+	turn(180, 15000,0,std::nullopt, &test);
+
+
 	//shivaan sawp
 	//drive(-700, M_TICKS, 1000, 0, 127, &jitterFree);
 	
@@ -259,33 +271,33 @@ void autonomous() {
 
 
 	//blue goal new doinker elims
-	drive(-700, M_TICKS, 5000, 0,  127, &jitterFree);
-	drive(-250, M_TICKS, 5000, 0,  80, &jitterFree);
-	mogo.set_value(true);
-	delay(200);
-	turn(177,15000,0,std::nullopt,&turnMogo);	
-	drive(930, M_TICKS, 5000, 0,  127, &driveMogo);
-	doinker.set_value(true);
-	delay(200);
-	drive(-1500, M_TICKS, 5000, 0,  127, &driveMogo);
-	doinker.set_value(false);
-	delay(100);
-	intake.move(127);
-	turn(-170, 5000, 0, 127, &turnMogo);
-	drive(500, M_TICKS, 5000, 0,  127, &driveMogo);
-	turn(90,15000,0,std::nullopt,&turnMogo);
-	drive(1100, M_TICKS, 5000, 0,  127, &driveMogo);
-	turn(0,15000,0,std::nullopt,&turnMogo);
-	// ladyBrownCorrectPosition = 300;
-	// lbPID = true;
-	intake.move(0);
-	doinker.set_value(true);
-	drive(1800, M_TICKS, 1500, 0,  127, &driveMogo);
-	delay(500);
-	turn(180, 1000, 0, 127, &turnMogo);
-	// turn(-130,15000,0,std::nullopt,&turnMogo);
-	//intake_lift.set_value(true);
-	// drive(2000, M_TICKS, 5000, 0,  127, &driveMogo);
+	// drive(-700, M_TICKS, 5000, 0,  127, &jitterFree);
+	// drive(-250, M_TICKS, 5000, 0,  80, &jitterFree);
+	// mogo.set_value(true);
+	// delay(200);
+	// turn(177,15000,0,std::nullopt,&turnMogo);	
+	// drive(930, M_TICKS, 5000, 0,  127, &driveMogo);
+	// doinker.set_value(true);
+	// delay(200);
+	// drive(-1500, M_TICKS, 5000, 0,  127, &driveMogo);
+	// doinker.set_value(false);
+	// delay(100);
+	// intake.move(127);
+	// turn(-170, 5000, 0, 127, &turnMogo);
+	// drive(500, M_TICKS, 5000, 0,  127, &driveMogo);
+	// turn(90,15000,0,std::nullopt,&turnMogo);
+	// drive(1100, M_TICKS, 5000, 0,  127, &driveMogo);
+	// turn(0,15000,0,std::nullopt,&turnMogo);
+	// // ladyBrownCorrectPosition = 300;
+	// // lbPID = true;
+	// intake.move(0);
+	// doinker.set_value(true);
+	// drive(1800, M_TICKS, 1500, 0,  127, &driveMogo);
+	// delay(500);
+	// turn(180, 1000, 0, 127, &turnMogo);
+	// // turn(-130,15000,0,std::nullopt,&turnMogo);
+	// //intake_lift.set_value(true);
+	// // drive(2000, M_TICKS, 5000, 0,  127, &driveMogo);
 
 
 
