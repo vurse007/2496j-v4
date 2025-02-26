@@ -50,16 +50,14 @@ extern PID default_drive_mogo_pid;
 extern PID default_turn_pid;
 extern PID default_turn_mogo_pid;
 extern PID heading_correction_pid;
+extern PID right_arc_pid;
+extern PID left_arc_pid;
 
 // Function declaration for drive
 void drive(double target, std::string_view units = M_TICKS, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_drive_pid);
 
 //function declaration for absolute turns
 void turn(double target, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_turn_pid);
-void cs_eject_blue();
-void cs_eject_red();
-void csauto_eject_red();
-void csauto_eject_blue();
 
 //declarations for functions of arc turns
-// void arc_right(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_drive_pid);
+void arc_right(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_drive_pid);

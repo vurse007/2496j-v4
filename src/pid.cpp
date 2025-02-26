@@ -95,6 +95,8 @@ PID default_drive_mogo_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 PID default_turn_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 PID default_turn_mogo_pid(0.0,0.0,0.0,0.0,0.0);
 PID heading_correction_pid(0.0, 0.0, 0.0, 0.0, 0.0);
+PID right_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
+PID left_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 
 void drive(double target, std::string_view units, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, PID* pid){
 
@@ -241,7 +243,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         if (headingError > 180) {
             headingError -= 360;
         }
-        double speed = pid->calculate(headingError, 127);
+        double speed = pid->calculate(headingError, speed_limit.value_or(127));
 
         //ouput speeds
         lchassis.move(speed);
@@ -265,201 +267,54 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
     chassis.brake();
 }
 
-// void arc_right(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_drive_pid){
-//     bool chain;
-//     if (chainPos == 0){
-//         chain = false;
-//     } else{
-//         chain = true;
-//         double trueTheta = target;
-//         target = target + chainPos;
-//     }
-
-//     double rightArcLength = (target/360)*2*M_PI*(radius-275);
-//     double leftArcLength = (target/360)*2*M_PI*(radius+275);
-
-//     double speedProp = rightArcLength/leftArcLength; //will be a fraction less than zero bc we are arcing to the right
-
-//     chassis.tare_position();
-//     chassis.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
-
-//     double init_heading = imu.get_heading();
-
-//     while (true){
-//         //wrap the init heading to 180,-180
-//         if (init_heading > 180){
-//             init_heading-=360;
-//         }
-
-//         double currentRightPos = (FR.get_position() + MR.get_position() + BR.get_position())/3;
-//         double currentLeftPos = (FL.get_position() + ML.get_position() + BL.get_position())/3;
-
-//         double right_error = rightArcLength - currentRightPos;
-//         double left_error = leftArcLength - currentLeftPos;
-//     }
-// }
-
-void cs_eject_blue(){
-    int cnt=0;
-    colorsort.set_led_pwm(70);
-    
-    int cnt2=0;
-    bool detect = false;
-    while(con.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-        //con.print(0,0, "error: %lf", colorsort.get_hue());
-    
-        if (con.get_digital(pros::E_CONTROLLER_DIGITAL_R1) ){
-            
-            if (colorsort.get_hue()> 160 && colorsort.get_hue()<240 && colorsort.get_proximity()>100){
-                detect = true;
-                con.print(0,0, "eor: %lf", colorsort.get_hue());
-            }
-            else{
-                detect=false;
-            }
-                
-            
-            if (detect == true){
-                cnt++;
-                
-            }
-            if (cnt >= 9000){
-                detect = false;
-                cnt++;
-                intake.move(-127);
-                
-                cnt2++;
-            }
-            if (cnt2 >=6000){
-                intake.move(127);
-                //intake.move(127);
-                cnt2 = 0;
-                cnt = 0;
-            }
-            
-        }
-        else intake.move(0);
-       
-        
+void arc_right(double target, double radius, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, PID* pid){
+    bool chain;
+    if (chainPos == 0){
+        chain = false;
+    } else{
+        chain = true;
+        double trueTheta = target;
+        target = target + chainPos;
     }
-}
-void cs_eject_red(){
-    int cnt=0;
-    colorsort.set_led_pwm(70);
-    
-    int cnt2=0;
-    bool detect = false;
-    while(con.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-        //con.print(0,0, "error: %lf", colorsort.get_hue());
-    
-        if (con.get_digital(pros::E_CONTROLLER_DIGITAL_R1) ){
-            
-            if ((colorsort.get_hue()> 320 || colorsort.get_hue()<30) && colorsort.get_proximity()>100){
-                detect = true;
-                con.print(0,0, "oooga: %lf", colorsort.get_hue());
-            }
-           
-                
-            
-            if (detect == true){
-                cnt++;
-                
-            }
-            if (cnt >= 9000){
-                detect = false;
-                cnt++;
-                intake.move(-127);
-                
-                cnt2++;
-            }
-            if (cnt2 >=5000){
-                intake.move(127);
-                //intake.move(127);
-                cnt2 = 0;
-                cnt = 0;
-            }
+
+    double rightArcLength = (target/360)*2*M_PI*(radius-275);
+    double leftArcLength = (target/360)*2*M_PI*(radius+275);
+
+    double speedProp = rightArcLength/leftArcLength; //will be a fraction less than zero bc we are arcing to the right
+
+    chassis.tare_position();
+    chassis.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
+
+    double init_heading = imu.get_heading();
+
+    pid->reset_PID();
+
+    while (true){
+        //wrap the init heading to 180,-180
+        if (init_heading > 180){
+            init_heading-=360;
         }
-        else intake.move(0);
+
+        double currentRightPos = (FR.get_position() + MR.get_position() + BR.get_position())/3;
+        double currentLeftPos = (FL.get_position() + ML.get_position() + BL.get_position())/3;
+
+        double right_error = rightArcLength - currentRightPos;
+        double left_error = leftArcLength - currentLeftPos;
+
+        double headingCorrect = (((currentRightPos+currentLeftPos)/2)*360) / (2*M_PI*radius);
         
-    }
-}
-void csauto_eject_red(){
-    int cnt=0;
-    colorsort.set_led_pwm(70);
-    
-    int cnt2=0;
-    bool detect = false;
-    while(true){
-        //con.print(0,0, "error: %lf", colorsort.get_hue());
-    
-        if (true) {
-            int tmp = colorsort.get_hue();
-            if ((tmp> 320 || tmp<30) && colorsort.get_proximity()>100){
-                detect = true;
-                con.print(0,0, "ror: %lf", tmp);
-            }
-           
-                
-            
-            if (detect == true){
-                cnt++;
-                
-            }
-            if (cnt >= 6800){
-                detect = false;
-                cnt++;
-                intake.move(-127);
-                
-                cnt2++;
-            }
-            if (cnt2 >=5000){
-                intake.move(127);
-                //intake.move(127);
-                cnt2 = 0;
-                cnt = 0;
-            }
+        double heading = imu.get_heading();
+        if (heading > 180) heading-= 360;
+        if (std::fabs((init_heading + headingCorrect) - heading) > 180){
+            if (heading > 0) init_heading += 360;
+            heading = imu.get_heading();
         }
-        else intake.move(0);
-        
-    }
-}
-void csauto_eject_blue(){
-    int cnt=0;
-    colorsort.set_led_pwm(70);
-    
-    int cnt2=0;
-    bool detect = false;
-    while(true){
-        //con.print(0,0, "error: %lf", colorsort.get_hue());
-    
-        if (true) {
-            
-            if (colorsort.get_hue()> 160 && colorsort.get_hue()<240 && colorsort.get_proximity()>100){
-                detect = true;
-                //con.print(0,0, "error: %lf", colorsort.get_hue());
-            }
-           
-                
-            
-            if (detect == true){
-                cnt++;
-                
-            }
-            if (cnt >= 6800){
-                detect = false;
-                cnt++;
-                intake.move(-127);
-                
-                cnt2++;
-            }
-            if (cnt2 >=5000){
-                intake.move(127);
-                //intake.move(127);
-                cnt2 = 0;
-                cnt = 0;
-            }
-        }
-        else intake.move(0);
-        
+        double headingCorrectionError = fmod(((init_heading + headingCorrect) - heading) + 360, 360);
+        if (headingCorrectionError > 180) headingCorrectionError -=360;
+
+        lchassis.move(pid->calculate(left_error, speed_limit.value_or(127)) + heading_correction_pid.calculate(headingCorrectionError));
+        rchassis.move(speedProp*pid->calculate(left_error, speed_limit.value_or(127)) - heading_correction_pid.calculate(headingCorrectionError));
+
+        if (left_arc_pid.settled(20, 500) && right_arc_pid.settled(20,500)) break;
     }
 }
