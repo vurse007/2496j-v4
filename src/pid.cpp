@@ -23,49 +23,9 @@ PID::PID(double kP, double kI, double kD, double integralThreshold, double maxIn
     this->slew = slew;
 }
 
-double PID::calculate(double error, double speed_limit){
-    //proportional
-    this->error = error;
 
-    //integral
-    if (fabs(this->error) < this->integralThreshold){
-        this->totalError = (((this->error+this->prevError)/2)+this->totalError)/200; //scale with sampling frequency
-    }
-    this->totalError = std::clamp(this->totalError, -this->maxIntegral, this->maxIntegral);
-    if ((this->error > 0 && this->prevError < 0) || (this->error < 0 && this->prevError > 0)){
-        this->totalError = 0; //when crossing setpoint, reset integral
-    }
 
-    //derivative
-    this->derivative = (this->error - this->prevError)*200; //scale with sampling frequency
-
-    //calculate speed
-    if(fabs(error)<50)
-    {
-        this->speed = (this->kP*1.7*this->error) + (this->kI*this->totalError) ;
-    }
-    else 
-    {
-        this->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
-    }
-    //->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
-
-    double deltaSpeed = this->speed - this->prevSpeed;
-    if (deltaSpeed > this->slew){
-        this->speed = this->prevSpeed + this->slew;
-    } else if (deltaSpeed < -this->slew){
-        this->speed = this->prevSpeed - this->slew;
-    }
-    this->speed = std::clamp(this->speed, -speed_limit, speed_limit);
-
-    //prepare for next iteration
-    this->prevError = this->error;
-    this->prevSpeed = this->speed;
-
-    return this->speed;
-}
-
-double PID::calculate(double error, double speed_limit, std::string NAME="drive"){
+double PID::calculate(double error, double speed_limit, std::string NAME){
     //proportional
     this->error = error;
 
@@ -94,14 +54,17 @@ double PID::calculate(double error, double speed_limit, std::string NAME="drive"
         }
     }
     else
-    if(fabs(error)<5)
     {
-        this->speed = (this->kP*1.7*this->error) + (this->kI*this->totalError) ;
+        if(fabs(error)<5)
+        {
+            this->speed = (this->kP*3*this->error) + (this->kI*this->totalError) +  (this->kD*this->derivative);
+        }
+        else 
+        {
+            this->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
+        }
     }
-    else 
-    {
-        this->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
-    }
+    
     //->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
 
     double deltaSpeed = this->speed - this->prevSpeed;
@@ -217,7 +180,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
     while (true){
         //force timeout check
         if (driveTimer.targetReached()){
-            break;
+            //break;
         }
 
         //heading correction
@@ -242,12 +205,12 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         
         //settling
         if (pid->settled(5,400)){
-            break;
+            //break;
         }
 
         //chaining movements
         if (chain == true && fabs(driveError) <= chainPos){
-            break;
+            //break;
         }
 
         pros::delay(5);
