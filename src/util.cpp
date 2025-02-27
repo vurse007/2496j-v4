@@ -1,6 +1,7 @@
-#include "util.hpp"
+#include "main.h"
 #include "global.hpp"
-
+#include "pid.hpp"
+#include "util.hpp"
 //timer object functions:
 timer::timer(double target){
     this->targetTime = target;
@@ -18,6 +19,8 @@ void timer::start(){
 double timer::getTime(){
     return (pros::millis() - this->startTime);
 }
+
+
 
 bool timer::targetReached(){
     if (this->getTime() >= this->targetTime){
@@ -93,31 +96,3 @@ void ladyBrownTask(){
 
 
 //stall protection and color sort util:
-bool intakeInterrupt = false;
-void stallProtection() {
-    timer stallTimer(1000);
-    timer reverseTimer(1000);
-    int returnVelocity = 0;
-    glb::con.clear();
-
-    while (1) {
-        
-        if (abs(glb::intake.get_actual_velocity()) <= 127 && glb::intake.get_target_velocity() != 0 && stallTimer.running == false) {
-            returnVelocity = glb::intake.get_target_velocity();
-            stallTimer.start(); //if stalled start the stall timer
-        }
-        if (stallTimer.targetReached()){
-            if (abs(glb::intake.get_actual_velocity()) <= 1 && glb::intake.get_target_velocity() != 0){
-                glb::intake.move(-127); //if the intake is still stalling after timer expires
-                reverseTimer.start();
-                while (reverseTimer.targetReached() == false){
-                    pros::delay(5); //lock out while reverser timer is counting
-                }
-                glb::intake.move(returnVelocity);
-            }
-        }
-        
-        pros::delay(5);
-        glb::con.print(0,0,"time: %d", stallTimer.getTime());
-    }
-}

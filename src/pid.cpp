@@ -205,7 +205,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         rchassis.move(speed - headingCorrection);
 
         //debugging with printing error to controller screen
-        con.print(0,0, "prt: %lf", driveError);
+        //con.print(0,0, "prt: %lf", driveError);
         
         //settling
         if (pid->settled(5,400)){
@@ -279,7 +279,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         rchassis.move(-speed);
 
         //debugging with printing error to controller screen
-        con.print(0,0, "error: %lf", headingError);
+        //con.print(0,0, "error: %lf", headingError);
         
         //settling
         if (pid->settled(5, 500)){
@@ -374,4 +374,45 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
         pros::delay(5);
     }
     chassis.brake();
+}
+
+int cnt=0;
+int rev_cnt=0;
+int cur_pos;
+int prev_pos;
+bool stalled=false;
+void stallProtection() {
+   
+    prev_pos=cur_pos;
+   pros::delay(50);
+   cur_pos=intake.get_position();
+   
+   if(abs(cur_pos-prev_pos)<5)
+   {
+        cnt++;
+        con.print(0,0, "prt: %lf", cnt);
+        
+   }
+   if(cnt>=5)
+   {
+        stalled=true;
+        cnt=0;
+   }
+   if(stalled)
+   {
+        intake.move(-127);
+        rev_cnt++;
+        if(rev_cnt>=5)
+        {
+            stalled=false;
+            rev_cnt=0;
+        }
+
+   }
+   else
+   {
+    intake.move(127);
+   }
+
+   
 }
