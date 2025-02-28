@@ -307,29 +307,31 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
         target = target + chainPos;
     }
 
+    double rightArcLength = (target/360)*2*M_PI*(radius-275);
+    double leftArcLength = (target/360)*2*M_PI*(radius+275);
+
+    double speedProp = rightArcLength/leftArcLength; //will be a fraction less than zero bc we are arcing to the right
+
+    // taylor polynomials
     timer arcTimer(-1);
     if (timeout.has_value()){
         arcTimer.set_target(timeout.value());
     }
     else {
-        double tPolyTimeoutOutput = arcTimeoutTPOLY.evaluate(target);
+        double tPolyTimeoutOutput = driveTimeoutTPOLY.evaluate(leftArcLength);
         arcTimer.set_target(tPolyTimeoutOutput);
     }
 
     //for tpoly kd values
     if (pid == &default_arc_pid){ //if default is used, nothing special requested
-        double tpolyKDOutput = arcKDTPOLY.evaluate(target);
+        double tpolyKDOutput = driveKDTPOLY.evaluate(leftArcLength);
         pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
     }
     else if (pid == &default_arc_mogo_pid){
-        double tpolyKDOutput = arcMogoKDTPOLY.evaluate(target);
+        double tpolyKDOutput = driveMogoKDTPOLY.evaluate(leftArcLength);
         pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
     }
 
-    double rightArcLength = (target/360)*2*M_PI*(radius-275);
-    double leftArcLength = (target/360)*2*M_PI*(radius+275);
-
-    double speedProp = rightArcLength/leftArcLength; //will be a fraction less than zero bc we are arcing to the right
 
     chassis.tare_position();
     chassis.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
@@ -366,6 +368,87 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
 
         lchassis.move(pid->calculate(left_error, speed_limit.value_or(127)) + heading_correction_pid.calculate(headingCorrectionError));
         rchassis.move(speedProp*pid->calculate(left_error, speed_limit.value_or(127)) - heading_correction_pid.calculate(headingCorrectionError));
+
+        if (default_arc_pid.settled(20,500)) break;
+
+        if (chain == true && fabs(heading - init_heading) >= trueTheta) break;
+
+        pros::delay(5);
+    }
+    chassis.brake();
+}
+
+void arc_left(double target, double radius, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, PID* pid){
+    bool chain;
+    double trueTheta;
+    if (chainPos == 0){
+        chain = false;
+    } else{
+        chain = true;
+        trueTheta = target;
+        target = target + chainPos;
+    }
+
+    double rightArcLength = (target/360)*2*M_PI*(radius+275);
+    double leftArcLength = (target/360)*2*M_PI*(radius-275);
+
+    double speedProp = leftArcLength/rightArcLength;
+
+    //timeout tpoly
+    timer arcTimer(-1);
+    if (timeout.has_value()){
+        arcTimer.set_target(timeout.value());
+    }
+    else {
+        double tPolyTimeoutOutput = driveTimeoutTPOLY.evaluate(rightArcLength);
+        arcTimer.set_target(tPolyTimeoutOutput);
+    }
+
+    //for tpoly kd values
+    if (pid == &default_arc_pid){ //if default is used, nothing special requested
+        double tpolyKDOutput = driveKDTPOLY.evaluate(rightArcLength);
+        pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
+    }
+    else if (pid == &default_arc_mogo_pid){
+        double tpolyKDOutput = driveMogoKDTPOLY.evaluate(rightArcLength);
+        pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
+    }
+
+    chassis.tare_position();
+    chassis.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
+
+    double init_heading = imu.get_heading();
+
+    pid->reset_PID();
+    heading_correction_pid.reset_PID();
+
+    arcTimer.start();
+
+    while (true){
+        //wrap the init heading to 180,-180
+        if (init_heading > 180){
+            init_heading-=360;
+        }
+
+        double currentRightPos = (FR.get_position() + MR.get_position() + BR.get_position())/3;
+        double currentLeftPos = (FL.get_position() + ML.get_position() + BL.get_position())/3;
+
+        double right_error = rightArcLength - currentRightPos;
+        double left_error = leftArcLength - currentLeftPos;
+
+        double headingCorrect = (((currentRightPos+currentLeftPos)/2)*360) / (2*M_PI*radius);
+
+        double heading = imu.get_heading();
+        if (heading > 180) heading-= 360;
+        if (std::fabs((init_heading + headingCorrect) - heading) > 180){
+            if (heading > 0) init_heading += 360;
+            heading = imu.get_heading();
+        }
+        double headingCorrectionError = fmod(((init_heading + headingCorrect) - heading) + 360, 360);
+        if (headingCorrectionError > 180) headingCorrectionError -=360;
+
+        lchassis.move(speedProp*pid->calculate(left_error, speed_limit.value_or(127)) + heading_correction_pid.calculate(headingCorrectionError));
+        rchassis.move(pid->calculate(left_error, speed_limit.value_or(127)) - heading_correction_pid.calculate(headingCorrectionError));
 
         if (default_arc_pid.settled(20,500)) break;
 

@@ -60,13 +60,51 @@ long double tPoly::scientificNotation(double number, double exponent){
 }
 
 //creating blank taylor polynomials to update in init function
-tPoly driveTimeoutTPOLY({0});
-tPoly turnTimeoutTPOLY({0});
-tPoly turnKDTPOLY({0});
-tPoly turnMogoKDTPOLY({0});
-tPoly driveKDTPOLY({0});
-tPoly driveMogoKDTPOLY({0});
-tPoly arcTimeoutTPOLY({0});
+tPoly driveTimeoutTPOLY({2000});
+tPoly turnTimeoutTPOLY({2000});
+
+tPoly turnMogoKDTPOLY({
+    tPoly::scientificNotation(3.58829605, -24),   // m
+    tPoly::scientificNotation(-3.71641178, -21),  // l
+    tPoly::scientificNotation(1.65001058, -18),   // k
+    tPoly::scientificNotation(-4.08877045, -16),  // j
+    tPoly::scientificNotation(6.13725372, -14),   // i
+    tPoly::scientificNotation(-5.56871764, -12),  // h
+    tPoly::scientificNotation(2.64601281, -10),   // g
+    tPoly::scientificNotation(-8.39436294, -7),   // f
+    tPoly::scientificNotation(0.0000544905519, 0), // d
+    tPoly::scientificNotation(-0.001699751186, 0), // c
+    tPoly::scientificNotation(0.0259173614, 0),    // b
+    tPoly::scientificNotation(0.00000647857494, 0) // a
+});
+
+tPoly turnMogoKDTPOLY({
+    tPoly::scientificNotation(4.026645186, -23),  
+    tPoly::scientificNotation(-3.981714098, -20),  
+    tPoly::scientificNotation(1.69477948, -17),  
+    tPoly::scientificNotation(-4.039800608, -15),  
+    tPoly::scientificNotation(5.841132192, -13),  
+    tPoly::scientificNotation(-5.092175166, -11),  
+    tPoly::scientificNotation(2.3017719, -9),  
+    tPoly::scientificNotation(-0.00006091306382, 0),  
+    tPoly::scientificNotation(0.0003346808217, 0),  
+    tPoly::scientificNotation(-0.008177025417, 0),  
+    tPoly::scientificNotation(0.08665183809, 0),  
+    tPoly::scientificNotation(7.865198524, -7)  
+});
+
+tPoly driveKDTPOLY({
+    tPoly::scientificNotation(-4.78412, -8),  
+    0.000135672,  
+    0.0890769  
+});
+
+tPoly driveMogoKDTPOLY({
+    tPoly::scientificNotation(-4.97897, -8),  
+    0.000128362,  
+    0.0171967  
+});
+
 
 
 //pid util:

@@ -37,9 +37,6 @@ extern tPoly turnKDTPOLY;
 extern tPoly turnMogoKDTPOLY;
 extern tPoly driveKDTPOLY;
 extern tPoly driveMogoKDTPOLY;
-extern tPoly arcTimeoutTPOLY;
-extern tPoly arcMogoKDTPOLY;
-extern tPoly arcKDTPOLY;
 
 //pid util
 double inches_to_chassis_ticks(double inches, double wheel_diameter = 3.25, double ticks_per_rev = 300);
