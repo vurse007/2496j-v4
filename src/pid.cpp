@@ -127,7 +127,7 @@ PID default_arc_mogo_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 PID near_drive_target(0.0, 0.0, 0.0, 0.0, 0.0);
 PID near_turn_target(0.0, 0.0, 0.0, 0.0, 0.0);
 
-void drive(double target, std::string_view units, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, PID* pid){
+void drive(double target, std::string_view units, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, bool auto_clamp, PID* pid){
 
     //based on value passed into the function, convert into motor encoder ticks
     if (units == M_TICKS){
@@ -138,6 +138,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
     else if (units == M_TILES){
         target = inches_to_chassis_ticks(target*24);
     }
+    
 
     //for motion chaining
     bool chain;
@@ -184,7 +185,11 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
     while (true){
         //force timeout check
         if (driveTimer.targetReached()){
-            //break;
+            break;
+        }
+        if (auto_clamp==true && autoclamp.get()<60)
+        {
+        mogo.set_value(true);
         }
 
         //heading correction
@@ -209,12 +214,12 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         
         //settling
         if (pid->settled(5,400)){
-            //break;
+            break;
         }
 
         //chaining movements
         if (chain == true && fabs(driveError) <= chainPos){
-            //break;
+            break;
         }
 
         pros::delay(5);
@@ -263,7 +268,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
     while (true){
         //force timeout check
         if (turnTimer.targetReached()){
-            //break;
+            break;
         }
 
         //turn logic
@@ -283,12 +288,12 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         
         //settling
         if (pid->settled(5, 500)){
-            //break;
+            break;
         }
 
         //chaining movements
         if (chain == true && fabs(headingError) <= chainPos){
-            //break;
+            break;
         }
 
         pros::delay(5);
@@ -387,7 +392,7 @@ void stallProtection() {
    pros::delay(50);
    cur_pos=intake.get_position();
    
-   if(abs(cur_pos-prev_pos)<5)
+   if(abs(cur_pos-prev_pos)<5 && lbPID==false)
    {
         cnt++;
         con.print(0,0, "prt: %lf", cnt);
