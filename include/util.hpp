@@ -51,5 +51,9 @@ extern PID ladyBrownPID;
 void ladyBrownTask();
 
 //stall protection and color sort util
-extern bool intakeInterrupt;
+extern int cnt;
+extern int rev_cnt;
+extern int cur_pos;
+extern int prev_pos;
+extern bool stalled;
 void stallProtection();

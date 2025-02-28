@@ -69,5 +69,3 @@ void turn(double target, std::optional<double> timeout = std::nullopt, double ch
 void arc_right(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_arc_pid);
 
 void arc_left(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_arc_pid);
-
-void stall();

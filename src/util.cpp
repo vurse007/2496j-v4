@@ -62,52 +62,14 @@ long double tPoly::scientificNotation(double number, double exponent){
     return number * pow(10, exponent);
 }
 
+
 //creating blank taylor polynomials to update in init function
-tPoly driveTimeoutTPOLY({2000});
-tPoly turnTimeoutTPOLY({2000});
-
-tPoly turnMogoKDTPOLY({
-    tPoly::scientificNotation(3.58829605, -24),   // m
-    tPoly::scientificNotation(-3.71641178, -21),  // l
-    tPoly::scientificNotation(1.65001058, -18),   // k
-    tPoly::scientificNotation(-4.08877045, -16),  // j
-    tPoly::scientificNotation(6.13725372, -14),   // i
-    tPoly::scientificNotation(-5.56871764, -12),  // h
-    tPoly::scientificNotation(2.64601281, -10),   // g
-    tPoly::scientificNotation(-8.39436294, -7),   // f
-    tPoly::scientificNotation(0.0000544905519, 0), // d
-    tPoly::scientificNotation(-0.001699751186, 0), // c
-    tPoly::scientificNotation(0.0259173614, 0),    // b
-    tPoly::scientificNotation(0.00000647857494, 0) // a
-});
-
-tPoly turnMogoKDTPOLY({
-    tPoly::scientificNotation(4.026645186, -23),  
-    tPoly::scientificNotation(-3.981714098, -20),  
-    tPoly::scientificNotation(1.69477948, -17),  
-    tPoly::scientificNotation(-4.039800608, -15),  
-    tPoly::scientificNotation(5.841132192, -13),  
-    tPoly::scientificNotation(-5.092175166, -11),  
-    tPoly::scientificNotation(2.3017719, -9),  
-    tPoly::scientificNotation(-0.00006091306382, 0),  
-    tPoly::scientificNotation(0.0003346808217, 0),  
-    tPoly::scientificNotation(-0.008177025417, 0),  
-    tPoly::scientificNotation(0.08665183809, 0),  
-    tPoly::scientificNotation(7.865198524, -7)  
-});
-
-tPoly driveKDTPOLY({
-    tPoly::scientificNotation(-4.78412, -8),  
-    0.000135672,  
-    0.0890769  
-});
-
-tPoly driveMogoKDTPOLY({
-    tPoly::scientificNotation(-4.97897, -8),  
-    0.000128362,  
-    0.0171967  
-});
-
+tPoly driveTimeoutTPOLY({0.0});
+tPoly turnTimeoutTPOLY({0.0});
+tPoly driveKDTPOLY({0.0});
+tPoly turnKDTPOLY({0.0});
+tPoly driveMogoKDTPOLY({0.0});
+tPoly turnMogoKDTPOLY({0.0});
 
 
 //pid util:
@@ -134,3 +96,43 @@ void ladyBrownTask(){
 
 
 //stall protection and color sort util:
+int cnt=0;
+int rev_cnt=0;
+int cur_pos;
+int prev_pos;
+bool stalled=false;
+void stallProtection() {
+   
+    prev_pos=cur_pos;
+   pros::delay(50);
+   cur_pos=glb::intake.get_position();
+   
+   if(abs(cur_pos-prev_pos)<5 && lbPID==false)
+   {
+        cnt++;
+        glb::con.print(0,0, "prt: %lf", cnt);
+        
+   }
+   if(cnt>=5)
+   {
+        stalled=true;
+        cnt=0;
+   }
+   if(stalled)
+   {
+        glb::intake.move(-127);
+        rev_cnt++;
+        if(rev_cnt>=5)
+        {
+            stalled=false;
+            rev_cnt=0;
+        }
+
+   }
+   else
+   {
+    glb::intake.move(127);
+   }
+
+   
+}

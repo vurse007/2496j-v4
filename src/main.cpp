@@ -18,17 +18,18 @@ void driverProfileAyush(){
 	rchassis.move(rightstick);
 	lchassis.move(leftstick);
 
-	//intake below - only give a specific velocity to move if intake does not need to be interrupted by stall and color sort tasks
-	if (con.get_digital(E_CONTROLLER_DIGITAL_R1) && intakeInterrupt == false){
-		intake.move(127);
+	//intake below
+	if (con.get_digital(E_CONTROLLER_DIGITAL_R1)){
+		//intake.move(127);
+		stallProtection();
 	}
-	else if(con.get_digital(E_CONTROLLER_DIGITAL_R2) && intakeInterrupt == false){
-		intake.move(-127);
+
+	else if(con.get_digital(E_CONTROLLER_DIGITAL_R2)){
+	 	intake.move(-127);
 	}
+
 	else{
-		if (intakeInterrupt == false){
-			intake.move(0);
-		}
+	 	intake.move(0);
 	}
 
 	//lady brown code below
@@ -89,12 +90,8 @@ void driverProfileManu(){
 
 	//intake below
 	if (con.get_digital(E_CONTROLLER_DIGITAL_R1)){
-		
 		//intake.move(127);
 		stallProtection();
-	
-		
-
 	}
 
 	else if(con.get_digital(E_CONTROLLER_DIGITAL_R2)){
@@ -171,6 +168,7 @@ void initialize() {
 
 	ldb.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
+	//starting tasks
 	//pros::Task stallProtector(stallProtection);
 	pros::Task ladyBrownMacroTask(ladyBrownTask);
 	//pros::Task cs_eject_redTask(cs_eject_red);
@@ -184,18 +182,53 @@ void initialize() {
 	heading_correction_pid.update_constants(13,0,0.85,1000,1000,127);
 	default_turn_pid.update_constants(13, 0, 0.85, 1000, 1000, 127);
 	default_turn_mogo_pid.update_constants(12, 0.2, 1, 1000, 1000, 127);
-	
-
-PID right_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
-PID left_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
-PID near_drive_target(0.0, 0.0, 0.0, 0.0, 0.0);
-PID near_turn_target(0.0, 0.0, 0.0, 0.0, 0.0);
 
 	//updating tPoly objects
-	driveTimeoutTPOLY.update_coefficients({5000});
-	turnTimeoutTPOLY.update_coefficients({5000});
-	driveKDTPOLY.update_coefficients({10});
-	turnKDTPOLY.update_coefficients({5});
+	driveTimeoutTPOLY.update_coefficients({2000});
+	turnTimeoutTPOLY.update_coefficients({2000});
+
+	turnMogoKDTPOLY.update_coefficients({
+		tPoly::scientificNotation(3.58829605, -24),   // m
+		tPoly::scientificNotation(-3.71641178, -21),  // l
+		tPoly::scientificNotation(1.65001058, -18),   // k
+		tPoly::scientificNotation(-4.08877045, -16),  // j
+		tPoly::scientificNotation(6.13725372, -14),   // i
+		tPoly::scientificNotation(-5.56871764, -12),  // h
+		tPoly::scientificNotation(2.64601281, -10),   // g
+		tPoly::scientificNotation(-8.39436294, -7),   // f
+		0.0000544905519, // d
+		-0.001699751186, // c
+		0.0259173614,    // b
+		0.00000647857494 // a
+	});
+
+	turnMogoKDTPOLY.update_coefficients({
+		tPoly::scientificNotation(4.026645186, -23),  
+		tPoly::scientificNotation(-3.981714098, -20),  
+		tPoly::scientificNotation(1.69477948, -17),  
+		tPoly::scientificNotation(-4.039800608, -15),  
+		tPoly::scientificNotation(5.841132192, -13),  
+		tPoly::scientificNotation(-5.092175166, -11),  
+		tPoly::scientificNotation(2.3017719, -9),  
+		-0.00006091306382,  
+		0.0003346808217,  
+		-0.008177025417,  
+		0.08665183809,  
+		tPoly::scientificNotation(7.865198524, -7)  
+	});
+
+	driveKDTPOLY.update_coefficients({
+		tPoly::scientificNotation(-4.78412, -8),  
+		0.000135672,  
+		0.0890769  
+	});
+
+	driveMogoKDTPOLY.update_coefficients({
+		tPoly::scientificNotation(-4.97897, -8),  
+		0.000128362,  
+		0.0171967  
+	});
+
 }
 
 /**
@@ -227,206 +260,7 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
-
-
-	//shivaan sawp
-	//drive(-700, M_TICKS, 1000, 0, 127, &jitterFree);
-	
-	
-	// drive(-700, M_TICKS, 5000, 0,  127, &jitterFree); // red goal side
-	// drive(-250, M_TICKS, 5000, 0,  80, &jitterFree);
-	// mogo.set_value(true);
-	// delay(200);
-	// turn(-177,15000,0,std::nullopt,&turnMogo);	
-	// drive(930, M_TICKS, 5000, 0,  127, &driveMogo);
-	// doinker.set_value(true);
-	// delay(200);
-	// drive(-1500, M_TICKS, 5000, 0,  127, &driveMogo);
-	// doinker.set_value(false);
-	// delay(100);
-	// intake.move(127);
-	// turn(170, 5000, 0, 127, &turnMogo);
-	// drive(500, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(-90,15000,0,std::nullopt,&turnMogo);
-	// drive(1100, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(0,15000,0,std::nullopt,&turnMogo);
-	// // ladyBrownCorrectPosition = 300;
-	// // lbPID = true;
-	// intake.move(0);
-	// doinker.set_value(true);
-	// drive(1800, M_TICKS, 1500, 0,  127, &driveMogo);
-	// delay(500);
-	// turn(180, 1000, 0, 127, &turnMogo);
-	// turn(130,15000,0,std::nullopt,&turnMogo);
-	//intake_lift.set_value(true);
-	// drive(2000, M_TICKS, 5000, 0,  127, &driveMogo);
-
-
-
-	//blue goal new doinker elims
-	// drive(-700, M_TICKS, 5000, 0,  127, &jitterFree);
-	// drive(-250, M_TICKS, 5000, 0,  80, &jitterFree);
-	// mogo.set_value(true);
-	// delay(200);
-	// turn(177,15000,0,std::nullopt,&turnMogo);	
-	// drive(930, M_TICKS, 5000, 0,  127, &driveMogo);
-	// doinker.set_value(true);
-	// delay(200);
-	// drive(-1500, M_TICKS, 5000, 0,  127, &driveMogo);
-	// doinker.set_value(false);
-	// delay(100);
-	// intake.move(127);
-	// turn(-170, 5000, 0, 127, &turnMogo);
-	// drive(500, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(90,15000,0,std::nullopt,&turnMogo);
-	// drive(1100, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(0,15000,0,std::nullopt,&turnMogo);
-	// // ladyBrownCorrectPosition = 300;
-	// // lbPID = true;
-	// intake.move(0);
-	// doinker.set_value(true);
-	// drive(1800, M_TICKS, 1500, 0,  127, &driveMogo);
-	// delay(500);
-	// turn(180, 1000, 0, 127, &turnMogo);
-	// // turn(-130,15000,0,std::nullopt,&turnMogo);
-	// //intake_lift.set_value(true);
-	// // drive(2000, M_TICKS, 5000, 0,  127, &driveMogo);
-
-
-
-
-
-
-
-
-	// drive(-950, M_TICKS, 5000, 0,  127, &jitterFree); // blue goal side
-	// drive(-100, M_TICKS, 1000, 0,  100, &jitterFree);
-	// mogo.set_value(true);
-	// delay(200);
-	// turn(-160,15000,0,std::nullopt,&turnMogo);	
-	// drive(850, M_TICKS, 5000, 0,  127, &driveMogo);
-	// doinker.set_value(true);
-	// delay(200);
-	// drive(-1350, M_TICKS, 5000, 0,  127, &driveMogo);
-	// doinker.set_value(false);
-	// delay(100);
-	// intake.move(127);
-	// turn(170,15000,0,std::nullopt,&turnMogo);	
-	// drive(500, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(60,15000,0,std::nullopt,&turnMogo);
-	// drive(1100, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(0,15000,0,std::nullopt,&turnMogo);
-	// drive(1600, M_TICKS, 1000, 0,  127, &driveMogo);
-	// delay(500);
-	// drive(-1000, M_TICKS, 1000, 0,  127, &driveMogo);
-	// turn(-130,15000,0,std::nullopt,&turnMogo);
-	// //intake_lift.set_value(true);
-	// drive(2000, M_TICKS, 5000, 0,  127, &driveMogo);
-
-
-
-
-
-
-
-
-	// pros::Task csortred(csauto_eject_red);
-	// drive(400, M_TICKS, 5000, 0,  127, &jitterFree); //blue ring
-	// turn(-60,15000,0,std::nullopt,&turnNormal);
-	// ldb.move(127);
-	// delay(500);
-	// ldb.move(0);
-	// drive(-1000, M_TICKS, 5000, 0,  127, &jitterFree);
-	// drive(-100, M_TICKS, 5000, 0,  80, &jitterFree);
-	// mogo.set_value(true);
-	// ldb.move(-127);
-	// delay(500);
-	// ldb.move(0);
-	// turn(135,15000,0,std::nullopt,&turnMogo);
-	// intake.move(127);
-	// drive(1000, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(175,15000,0,std::nullopt,&turnMogo);
-	// drive(300, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(-90,15000,0,std::nullopt,&turnMogo);
-	// drive(1500, M_TICKS, 5000, 10,  127, &driveMogo);
-	// //turn(-10,15000,0,std::nullopt,&turnMogo);
-	// //drive(450, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(-135,15000,0,std::nullopt,&turnMogo);
-	// drive(1500, M_TICKS, 1000, 0,  90, &driveMogo);
-	// delay(200);
-	// ldb.move(-127);
-	// drive(-500, M_TICKS, 5000, 0,  127, &driveMogo);
-	// ldb.move(0);
-	// drive(-2000, M_TICKS, 5000, 0, 127, &driveMogo);
-	// csortred.remove();
-
-
-
-	// pros::Task csortblue(csauto_eject_blue);
-	// drive(400, M_TICKS, 5000, 0,  127, &jitterFree); //red ring new
-	// turn(60,15000,0,std::nullopt,&turnNormal);
-	// ldb.move(127);
-	// delay(500);
-	// ldb.move(0);
-	// drive(-900, M_TICKS, 5000, 0,  127, &jitterFree);
-	// drive(-150, M_TICKS, 5000, 0,  80, &jitterFree);
-	// mogo.set_value(true);
-	// ldb.move(-127);
-	// delay(500);
-	// ldb.move(0);
-	// turn(-135,15000,0,std::nullopt,&turnMogo);
-	// intake.move(127);
-	// drive(1000, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(-175,15000,0,std::nullopt,&turnMogo);
-	// drive(300, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(90,15000,0,std::nullopt,&turnMogo);
-	// drive(1500, M_TICKS, 5000, 10,  127, &driveMogo);
-	// //turn(10,15000,0,std::nullopt,&turnMogo);
-	// //drive(450, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(135,15000,0,std::nullopt,&turnMogo);
-	// drive(1500, M_TICKS, 1000, 0,  90, &driveMogo);
-	// delay(200);
-	// ldb.move(-127);
-	// drive(-500, M_TICKS, 5000, 0,  127, &driveMogo);
-	// ldb.move(0);
-	// drive(-2000, M_TICKS, 5000, 0, 127, &driveMogo);
-	// csortblue.remove();
-
-
-
-	// pros::Task csortblue(csauto_eject_blue);
-	// drive(400, M_TICKS, 5000, 0,  127, &jitterFree); //red ring old
-	// turn(60,15000,0,std::nullopt,&turnNormal);
-	// ldb.move(127);
-	// delay(500);
-	// ldb.move(0);
-	// drive(-1000, M_TICKS, 5000, 0,  127, &jitterFree);
-	// drive(-200, M_TICKS, 5000, 0,  90, &jitterFree);
-	// mogo.set_value(true);
-	// ldb.move(-127);
-	// delay(400);
-	// ldb.move(0);
-	// turn(135,15000,0,std::nullopt,&turnMogo);
-	// intake.move(127);
-	// drive(1000, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(175,15000,0,std::nullopt,&turnMogo);
-	// drive(300, M_TICKS, 5000, 0,  127, &driveMogo);
-	// turn(-90,15000,0,std::nullopt,&turnMogo);
-	// drive(1500, M_TICKS, 5000, 10,  127, &driveMogo);
-	// turn(-135,15000,0,std::nullopt,&turnMogo);
-	// drive(1500, M_TICKS, 1000, 0,  90, &driveMogo);
-	// delay(200);
-	// ladyBrownCorrectPosition = 200;
-	// lbPID = true;
-	// drive(-2000, M_TICKS, 5000, 0, 127, &driveMogo);
-	// csortblue.remove();
-
-	
-	
-
-	
-}
+void autonomous() {}
 
 /**
  * Runs the operator control code. This function will be sta
