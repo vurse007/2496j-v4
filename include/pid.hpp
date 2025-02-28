@@ -26,7 +26,6 @@ public:
     double prevError = 0;
     double totalError = 0;
     double derivative = 0;
-    std::string NAME = "drive";
 
     double prevSpeed = 0;
     double slew;
@@ -56,8 +55,6 @@ extern PID default_turn_mogo_pid;
 extern PID heading_correction_pid;
 extern PID default_arc_pid;
 extern PID default_arc_mogo_pid;
-extern PID near_drive_target;
-extern PID near_turn_target;
 
 // Function declaration for drive
 void drive(double target, std::string_view units = M_TICKS, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, bool auto_clamp=false, PID* pid = &default_drive_pid);

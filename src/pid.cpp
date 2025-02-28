@@ -124,8 +124,6 @@ PID default_turn_mogo_pid(0.0,0.0,0.0,0.0,0.0);
 PID heading_correction_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 PID default_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 PID default_arc_mogo_pid(0.0, 0.0, 0.0, 0.0, 0.0);
-PID near_drive_target(0.0, 0.0, 0.0, 0.0, 0.0);
-PID near_turn_target(0.0, 0.0, 0.0, 0.0, 0.0);
 
 void drive(double target, std::string_view units, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, bool auto_clamp, PID* pid){
 
@@ -189,7 +187,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         }
         if (auto_clamp==true && autoclamp.get()<60)
         {
-        mogo.set_value(true);
+            mogo.set_value(true);
         }
 
         //heading correction
