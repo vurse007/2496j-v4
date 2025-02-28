@@ -65,10 +65,10 @@ void driverProfileAyush(){
 		releaseTime = pros::millis();
 		releaseRecorded = true;
 	}
-	if (autoclamp.get() <= 200){
+	if (autoclamp.get() <= 60){
 		triggerTime = pros::millis();
 	}
-	if (autoclamp.get() <= 200 && (pros::millis() - triggerTime) >= 0.2 && (pros::millis() - releaseTime) > 2.00){
+	if (autoclamp.get() <= 60 && (pros::millis() - triggerTime) >= 0.2 && (pros::millis() - releaseTime) > 2.00){
 		mogoState = true;
 		mogo.set_value(true);
 	}
@@ -90,7 +90,9 @@ void driverProfileManu(){
 	//intake below
 	if (con.get_digital(E_CONTROLLER_DIGITAL_R1)){
 		
-		intake.move(127);
+		//intake.move(127);
+		stallProtection();
+	
 		
 
 	}

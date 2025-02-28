@@ -1,6 +1,7 @@
 #pragma once
 #include "api.h"
 #include "pid.hpp"
+#include "global.hpp"
 
 class timer {
     private:
@@ -37,6 +38,7 @@ extern tPoly turnKDTPOLY;
 extern tPoly turnMogoKDTPOLY;
 extern tPoly driveKDTPOLY;
 extern tPoly driveMogoKDTPOLY;
+
 
 //pid util
 double inches_to_chassis_ticks(double inches, double wheel_diameter = 3.25, double ticks_per_rev = 300);

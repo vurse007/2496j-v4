@@ -127,7 +127,7 @@ PID default_arc_mogo_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 PID near_drive_target(0.0, 0.0, 0.0, 0.0, 0.0);
 PID near_turn_target(0.0, 0.0, 0.0, 0.0, 0.0);
 
-void drive(double target, std::string_view units, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, PID* pid){
+void drive(double target, std::string_view units, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, bool auto_clamp, PID* pid){
 
     //based on value passed into the function, convert into motor encoder ticks
     if (units == M_TICKS){
@@ -138,6 +138,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
     else if (units == M_TILES){
         target = inches_to_chassis_ticks(target*24);
     }
+    
 
     //for motion chaining
     bool chain;
@@ -184,7 +185,11 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
     while (true){
         //force timeout check
         if (driveTimer.targetReached()){
-            //break;
+            break;
+        }
+        if (auto_clamp==true && autoclamp.get()<60)
+        {
+        mogo.set_value(true);
         }
 
         //heading correction
@@ -205,16 +210,16 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         rchassis.move(speed - headingCorrection);
 
         //debugging with printing error to controller screen
-        con.print(0,0, "prt: %lf", driveError);
+        //con.print(0,0, "prt: %lf", driveError);
         
         //settling
         if (pid->settled(5,400)){
-            //break;
+            break;
         }
 
         //chaining movements
         if (chain == true && fabs(driveError) <= chainPos){
-            //break;
+            break;
         }
 
         pros::delay(5);
@@ -263,7 +268,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
     while (true){
         //force timeout check
         if (turnTimer.targetReached()){
-            //break;
+            break;
         }
 
         //turn logic
@@ -279,16 +284,16 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         rchassis.move(-speed);
 
         //debugging with printing error to controller screen
-        con.print(0,0, "error: %lf", headingError);
+        //con.print(0,0, "error: %lf", headingError);
         
         //settling
         if (pid->settled(5, 500)){
-            //break;
+            break;
         }
 
         //chaining movements
         if (chain == true && fabs(headingError) <= chainPos){
-            //break;
+            break;
         }
 
         pros::delay(5);
@@ -457,4 +462,45 @@ void arc_left(double target, double radius, std::optional<double> timeout, doubl
         pros::delay(5);
     }
     chassis.brake();
+}
+
+int cnt=0;
+int rev_cnt=0;
+int cur_pos;
+int prev_pos;
+bool stalled=false;
+void stallProtection() {
+   
+    prev_pos=cur_pos;
+   pros::delay(50);
+   cur_pos=intake.get_position();
+   
+   if(abs(cur_pos-prev_pos)<5 && lbPID==false)
+   {
+        cnt++;
+        con.print(0,0, "prt: %lf", cnt);
+        
+   }
+   if(cnt>=5)
+   {
+        stalled=true;
+        cnt=0;
+   }
+   if(stalled)
+   {
+        intake.move(-127);
+        rev_cnt++;
+        if(rev_cnt>=5)
+        {
+            stalled=false;
+            rev_cnt=0;
+        }
+
+   }
+   else
+   {
+    intake.move(127);
+   }
+
+   
 }

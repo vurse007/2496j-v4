@@ -39,6 +39,7 @@ public:
 
     double integralThreshold;
     double maxIntegral;
+    
 
     PID(double kP, double kI, double kD, double integralThreshold, double maxIntegral, double slew = 127);
 
@@ -59,7 +60,7 @@ extern PID near_drive_target;
 extern PID near_turn_target;
 
 // Function declaration for drive
-void drive(double target, std::string_view units = M_TICKS, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_drive_pid);
+void drive(double target, std::string_view units = M_TICKS, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, bool auto_clamp=false, PID* pid = &default_drive_pid);
 
 //function declaration for absolute turns
 void turn(double target, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_turn_pid);
@@ -68,3 +69,5 @@ void turn(double target, std::optional<double> timeout = std::nullopt, double ch
 void arc_right(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_arc_pid);
 
 void arc_left(double target, double radius, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_arc_pid);
+
+void stall();
