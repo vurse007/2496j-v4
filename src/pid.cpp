@@ -25,57 +25,51 @@ PID::PID(double kP, double kI, double kD, double integralThreshold, double maxIn
 
 
 
-double PID::calculate(double error, double speed_limit, std::string NAME){
-    //proportional
+double PID::calculate(double error, double speed_limit, std::string NAME) {
+    // Proportional term
     this->error = error;
 
-    //integral
-    if (fabs(this->error) < this->integralThreshold){
-        this->totalError = (((this->error+this->prevError)/2)+this->totalError)/200; //scale with sampling frequency
+    // Integral term (scaled properly for 200 Hz loop)
+    if (fabs(this->error) < this->integralThreshold) {
+        this->totalError += (this->error + this->prevError)/* / 2.0 * 0.005*/; // 0.005 = 5ms (1/200 Hz)
     }
     this->totalError = std::clamp(this->totalError, -this->maxIntegral, this->maxIntegral);
-    if ((this->error > 0 && this->prevError < 0) || (this->error < 0 && this->prevError > 0)){
-        this->totalError = 0; //when crossing setpoint, reset integral
+
+    // Reset integral when crossing zero
+    if ((this->error > 0 && this->prevError < 0) || (this->error < 0 && this->prevError > 0)) {
+        this->totalError = 0;
     }
 
-    //derivative
-    this->derivative = (this->error - this->prevError)*200; //scale with sampling frequency
+    // Derivative term (scaled for 200 Hz)
+    this->derivative = (this->error - this->prevError) /** 200.0*/; // 1 / 0.005 = 200
 
-    //calculate speed
-    if(NAME=="drive")
-    {
-        if(fabs(error)<50)
-        {
-            this->speed = (this->kP*1.7*this->error) + (this->kI*this->totalError) ;
+    // Calculate speed based on context
+    if (NAME == "drive") {
+        if (fabs(error) < 50) {
+            this->speed = (this->kP * 1.8 * this->error) + (this->kI * this->totalError) + (this->kD * 0.8 * this->derivative);
+        } else {
+            this->speed = (this->kP * this->error) + (this->kI * this->totalError) + (this->kD * this->derivative);
         }
-        else 
-        {
-            this->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
+    } else {
+        if (fabs(error) < 5) {
+            this->speed = (this->kP * 2.5 * this->error) + (this->kI * this->totalError) + (this->kD * this->derivative);
+        } else {
+            this->speed = (this->kP * this->error) + (this->kI * this->totalError) + (this->kD * this->derivative);
         }
     }
-    else
-    {
-        if(fabs(error)<5)
-        {
-            this->speed = (this->kP*3*this->error) + (this->kI*this->totalError) +  (this->kD*this->derivative);
-        }
-        else 
-        {
-            this->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
-        }
-    }
-    
-    //->speed = (this->kP*this->error) + (this->kI*this->totalError) + (this->kD*this->derivative);
 
+    // Slew rate limit
     double deltaSpeed = this->speed - this->prevSpeed;
-    if (deltaSpeed > this->slew){
+    if (deltaSpeed > this->slew) {
         this->speed = this->prevSpeed + this->slew;
-    } else if (deltaSpeed < -this->slew){
+    } else if (deltaSpeed < -this->slew) {
         this->speed = this->prevSpeed - this->slew;
     }
+
+    // Ensure speed is within limits
     this->speed = std::clamp(this->speed, -speed_limit, speed_limit);
 
-    //prepare for next iteration
+    // Prepare for next iteration
     this->prevError = this->error;
     this->prevSpeed = this->speed;
 
@@ -208,7 +202,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         rchassis.move(speed - headingCorrection);
 
         //debugging with printing error to controller screen
-        //con.print(0,0, "prt: %lf", driveError);
+        con.print(0,0, "prt: %lf", driveError);
         
         //settling
         if (pid->settled(5,400)){
@@ -282,7 +276,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         rchassis.move(-speed);
 
         //debugging with printing error to controller screen
-        //con.print(0,0, "error: %lf", headingError);
+        con.print(0,0, "error: %lf", headingError);
         
         //settling
         if (pid->settled(5, 500)){

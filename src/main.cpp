@@ -177,12 +177,12 @@ void initialize() {
 	//pros:: Task csauto_eject_blueTask(csauto_eject_blue);
 
 	//updating PID objects
-	default_drive_pid.update_constants(0.5,0,400,1000,1000,70);
-	default_drive_mogo_pid.update_constants(1.2,0,0.1,1000,1000,127);
-	heading_correction_pid.update_constants(13,0,0.85,1000,1000,127);
-	default_turn_pid.update_constants(13, 0, 0.85, 1000, 1000, 127);
-	default_turn_mogo_pid.update_constants(12, 0.2, 1, 1000, 1000, 127);
-	default_arc_pid.update_constants(0.5,0,400,1000,1000,70);
+	default_drive_pid.update_constants(0.8, 0.03, 15.4, 1000, 1000, 70);
+	default_drive_mogo_pid.update_constants(0.8, 0.03, 15.6,1000,1000,70);
+	heading_correction_pid.update_constants(0,0,0,1000,1000,127);
+	default_turn_pid.update_constants(3,0.0001,24.2,1000, 1000, 127);
+	default_turn_mogo_pid.update_constants(4,0.0007,36,1000, 1000, 127);
+	default_arc_pid.update_constants(0.5,0,0.085,1000,1000,70);
 	default_arc_mogo_pid.update_constants(1.2,0,0.1,1000,1000,127);
 
 	//updating tPoly objects
@@ -190,46 +190,29 @@ void initialize() {
 	turnTimeoutTPOLY.update_coefficients({2000});
 
 	turnMogoKDTPOLY.update_coefficients({
-		tPoly::scientificNotation(3.58829605, -24),   // m
-		tPoly::scientificNotation(-3.71641178, -21),  // l
-		tPoly::scientificNotation(1.65001058, -18),   // k
-		tPoly::scientificNotation(-4.08877045, -16),  // j
-		tPoly::scientificNotation(6.13725372, -14),   // i
-		tPoly::scientificNotation(-5.56871764, -12),  // h
-		tPoly::scientificNotation(2.64601281, -10),   // g
-		tPoly::scientificNotation(-8.39436294, -7),   // f
-		0.0000544905519, // d
-		-0.001699751186, // c
-		0.0259173614,    // b
-		0.00000647857494 // a
+		tPoly::scientificNotation(5.90104, -9),
+		-0.00000320986,
+		0.000653145,
+		-0.06051,
+		2.50143,
+		0.0501999
 	});
 
-	turnMogoKDTPOLY.update_coefficients({
-		tPoly::scientificNotation(4.026645186, -23),  
-		tPoly::scientificNotation(-3.981714098, -20),  
-		tPoly::scientificNotation(1.69477948, -17),  
-		tPoly::scientificNotation(-4.039800608, -15),  
-		tPoly::scientificNotation(5.841132192, -13),  
-		tPoly::scientificNotation(-5.092175166, -11),  
-		tPoly::scientificNotation(2.3017719, -9),  
-		-0.00006091306382,  
-		0.0003346808217,  
-		-0.008177025417,  
-		0.08665183809,  
-		tPoly::scientificNotation(7.865198524, -7)  
+	tPoly turnKDTPOLY({
+		tPoly::scientificNotation(-2.71667, -9),    // a
+		tPoly::scientificNotation(0.00000107569, 0), // b
+		tPoly::scientificNotation(-0.00011859, 0),   // c
+		tPoly::scientificNotation(-0.00041319, 0),   // d
+		tPoly::scientificNotation(0.641469, 0)       // f
 	});
 
 	driveKDTPOLY.update_coefficients({
-		tPoly::scientificNotation(-4.78412, -8),  
-		0.000135672,  
-		0.0890769  
-	});
+		15.4
+	}); //constant kd value
 
 	driveMogoKDTPOLY.update_coefficients({
-		tPoly::scientificNotation(-4.97897, -8),  
-		0.000128362,  
-		0.0171967  
-	});
+		15.6
+	}); //constant kd value
 
 }
 
@@ -262,7 +245,32 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	// for (int i = 0; i <= 180; i += 10){ //ayush tuning testing shenanigans
+	// 	turn(i);
+	// 	con.rumble(".");
+	// 	std::cout << default_turn_pid.error << "\n";
+	// 	delay(1000);
+	// }
+
+	//examples:
+	drive(1000, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	//    dist, units,   timeout,  chainPos, speedlimit, autoclamp, pid type
+	// for timeout and speedlimit: std::nullopt is like not passing in anything do this to use default values (127 for speedlim, and taylor generated timeout)
+
+	turn(90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	// angle, timeout, chainPos, speedlimit, pid type
+	// for timeout and speedlimit: std::nullopt is like not passing in anything do this to use default values (127 for speedlim, and taylor generated timeout)
+
+	//for pid types, if u dont pass in anything the function assumes you are using normal movements, no mogo
+	//use M_DRIVE_MOGO for driving with a mogo, M_TURN_MOGO for turning with a mogo
+
+
+
+
+	//AUTON HERE LARRY
+
+}
 
 /**
  * Runs the operator control code. This function will be sta

@@ -81,7 +81,7 @@ double inches_to_chassis_ticks(double inches, double wheel_diameter, double tick
 bool lbPID = false;
 double ladyBrownCorrectPosition = 130.00;
 double ladyBrownCurrentPosition;
-PID ladyBrownPID(3,0,0,10, 100, 127);
+PID ladyBrownPID(2.5,0,0,10, 100, 127);
 
 void ladyBrownTask(){
 	while(1){
