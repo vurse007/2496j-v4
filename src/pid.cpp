@@ -242,13 +242,20 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         turnTimer.set_target(tpolyTimeoutOutput);
     }
 
+    double currentHeading = imu.get_heading();
+    double headingError = fmod(target - currentHeading + 360, 360);
+    if (headingError > 180) {
+        headingError -= 360;
+    }
     //for tpoly kd values
+    double tpolykdoutputdeletelater;
     if (pid == &default_turn_pid){ //if default is used, nothing special requested
-        double tpolyKDOutput = turnKDTPOLY.evaluate(target);
+        double tpolyKDOutput = turnKDTPOLY.evaluate(headingError);
+        tpolykdoutputdeletelater = tpolyKDOutput;
         pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
     }
     else if (pid == &default_turn_mogo_pid){
-        double tpolyKDOutput = turnMogoKDTPOLY.evaluate(target);
+        double tpolyKDOutput = turnMogoKDTPOLY.evaluate(headingError);
         pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
     }
 
@@ -264,8 +271,8 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         }
 
         //turn logic
-        double currentHeading = imu.get_heading();
-        double headingError = fmod(target - currentHeading + 360, 360);
+        currentHeading = imu.get_heading();
+        headingError = fmod(target - currentHeading + 360, 360);
         if (headingError > 180) {
             headingError -= 360;
         }
@@ -276,7 +283,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         rchassis.move(-speed);
 
         //debugging with printing error to controller screen
-        con.print(0,0, "error: %lf", headingError);
+        con.print(0,0, "error: %lf", tpolykdoutputdeletelater);
         
         //settling
         if (pid->settled(5, 500)){

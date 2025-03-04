@@ -198,12 +198,13 @@ void initialize() {
 		0.0501999
 	});
 
-	tPoly turnKDTPOLY({
-		tPoly::scientificNotation(-2.71667, -9),    // a
-		tPoly::scientificNotation(0.00000107569, 0), // b
-		tPoly::scientificNotation(-0.00011859, 0),   // c
-		tPoly::scientificNotation(-0.00041319, 0),   // d
-		tPoly::scientificNotation(0.641469, 0)       // f
+	turnKDTPOLY.update_coefficients({
+		tPoly::scientificNotation(-5.21982, -10),  // x^5
+		tPoly::scientificNotation(-2.80159, -8),   // x^4
+		tPoly::scientificNotation(0.0000858705, 0),// x^3
+		tPoly::scientificNotation(-0.017407, 0),   // x^2
+		tPoly::scientificNotation(1.24785, 0),     // x
+		tPoly::scientificNotation(-3.16719, 0)     // constant
 	});
 
 	driveKDTPOLY.update_coefficients({
@@ -213,7 +214,6 @@ void initialize() {
 	driveMogoKDTPOLY.update_coefficients({
 		15.6
 	}); //constant kd value
-
 }
 
 /**
@@ -254,11 +254,13 @@ void autonomous() {
 	// }
 
 	//examples:
-	drive(1000, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	//drive(1000, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 	//    dist, units,   timeout,  chainPos, speedlimit, autoclamp, pid type
 	// for timeout and speedlimit: std::nullopt is like not passing in anything do this to use default values (127 for speedlim, and taylor generated timeout)
 
-	turn(90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+
+	PID tempturn(3,0.0001,25,1000, 1000, 127); //+0.8 to every one?
+	turn(90, std::nullopt, 0, std::nullopt, &tempturn);
 	// angle, timeout, chainPos, speedlimit, pid type
 	// for timeout and speedlimit: std::nullopt is like not passing in anything do this to use default values (127 for speedlim, and taylor generated timeout)
 
