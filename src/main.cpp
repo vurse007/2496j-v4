@@ -254,16 +254,38 @@ void autonomous() {
 	// }
 
 	//examples:
-	drive(1000, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	//drive(1000, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 	//    dist, units,   timeout,  chainPos, speedlimit, autoclamp, pid type
 	// for timeout and speedlimit: std::nullopt is like not passing in anything do this to use default values (127 for speedlim, and taylor generated timeout)
 
-	turn(90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	//turn(90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
 	// angle, timeout, chainPos, speedlimit, pid type
 	// for timeout and speedlimit: std::nullopt is like not passing in anything do this to use default values (127 for speedlim, and taylor generated timeout)
 
 	//for pid types, if u dont pass in anything the function assumes you are using normal movements, no mogo
 	//use M_DRIVE_MOGO for driving with a mogo, M_TURN_MOGO for turning with a mogo
+	//intake.move(127);
+	drive(600, M_TICKS, std::nullopt, 0, std::nullopt, true);
+	turn(-90, std::nullopt, 0, std::nullopt);
+	drive(-800, M_TICKS, std::nullopt, 0, 70, true);
+	turn(20, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(700, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	turn(45, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(1100, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	turn(10, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(1200, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	lbPID==true;
+	//delay(00);
+	drive(-1200, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	turn(90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(500, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	//wall stake here
+	drive(-500, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	turn(180, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(2300, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+
+
+	
 
 
 
