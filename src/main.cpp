@@ -254,6 +254,11 @@ void autonomous() {
 	// }
 
 	//examples:
+
+	//EXAMPLE FOR TEMP TURN, USE THIS IF TPOLY STILL DONT WORK
+	PID tempturn(3,0.0001, 24.2, 1000, 1000, 127);
+	turn(90, std::nullopt, 0, std::nullopt, &tempturn);
+
 	//drive(1000, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 	//    dist, units,   timeout,  chainPos, speedlimit, autoclamp, pid type
 	// for timeout and speedlimit: std::nullopt is like not passing in anything do this to use default values (127 for speedlim, and taylor generated timeout)
@@ -283,15 +288,6 @@ void autonomous() {
 	drive(-500, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 	turn(180, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
 	drive(2300, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-
-
-	
-
-
-
-
-	//AUTON HERE LARRY
-
 }
 
 /**
