@@ -182,8 +182,8 @@ void initialize() {
 	heading_correction_pid.update_constants(0,0,0,1000,1000,127);
 	default_turn_pid.update_constants(3,0.0001,24.2,1000, 1000, 127);
 	default_turn_mogo_pid.update_constants(4,0.0007,36,1000, 1000, 127);
-	default_arc_pid.update_constants(0.5,0,0.085,1000,1000,70);
-	default_arc_mogo_pid.update_constants(1.2,0,0.1,1000,1000,127);
+	default_arc_pid.update_constants(0.8, 0.03, 15.4, 1000, 1000, 70);
+	default_arc_mogo_pid.update_constants(0.8, 0.03, 15.6,1000,1000,70);
 
 	//updating tPoly objects
 	driveTimeoutTPOLY.update_coefficients({2000});
