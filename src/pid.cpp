@@ -233,7 +233,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         con.print(0,0, "prt: %lf", driveError);
         
         //settling
-        if (pid->settled(5,400)){
+        if (pid->settled(5,80)){
             break;
         }
 
@@ -363,7 +363,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         con.print(0,0, "error: %lf", headingError);
         
         //settling
-        if (pid->settled(5, 500)){
+        if (pid->settled(2, 80)){
             break;
         }
 

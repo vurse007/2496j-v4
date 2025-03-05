@@ -256,17 +256,21 @@ void autonomous() {
 	intake.move(127);
 	drive(3200, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 	drive(350, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-	lbPID=true;
+	lbPID=1;
 	delay(200);
 	drive(-1640, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	intake.move(0);
+	lbPID=2;
 	turn(90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
-	drive(700, M_TICKS, 1000, 0, std::nullopt, true, M_DRIVE_MOGO);
+	intake.move(127);
+	drive(700, M_TICKS, 1000, 0, 70, true, M_DRIVE_MOGO);
 	drive(1800, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 
 	//ladybrown shit
 	
 	drive(-400, M_TICKS, 1000, 0, std::nullopt, true, M_DRIVE_MOGO);
 	turn(180, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(1800, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 	//PID arcer(0.8, 0.03, 15.4, 1000, 1000, 70);
 	//arc_left(90, 1000, 1500, 0, std::nullopt, &arcer);
 }
