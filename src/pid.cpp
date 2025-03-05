@@ -168,7 +168,11 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
     pid->reset_PID();
     heading_correction_pid.reset_PID();
 
-    double initialHeading = PID::overallHeading;
+    double initialHeading = imu.get_heading();
+    if (initialHeading > 180){
+		initialHeading = ((360-initialHeading) * -1);
+	}
+    //change it to global tracker
 
     driveTimer.start();
 
@@ -185,11 +189,35 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         }
 
         //heading correction
-        double currentHeading = imu.get_heading();
-        double headingError = fmod(initialHeading - currentHeading + 360, 360);
-        if (headingError > 180) {
-            headingError -= 360;
+        double position = imu.get_heading();
+        //double turnV;
+        if (position > 180){ //make only > if not working
+            position = ((360-position) * -1);
         }
+
+        if ((target < 0) && (position > 0)){
+            if ((position - target) >= 180){
+                target = target + 360;
+                position = imu.get_heading();
+                //turnV = (target - position); 
+            }
+            else {
+                //turnV = (abs(position) + abs(target));
+            }
+        }
+        else if ((target > 0) && (position < 0)) {
+            if ((target - position) >= 180){
+                position = imu.get_heading();
+                //turnV = abs(abs(position) - abs(target));
+            }
+            else {
+                //turnV = (abs(position) + target); 
+            }
+        }
+        else {
+            //turnV = abs(abs(position) - abs(target));
+        }
+        double headingError = initialHeading - position;
         double headingCorrection = heading_correction_pid.calculate(headingError);
 
         //drive calculations
@@ -221,7 +249,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
 }
 
 void turn(double target, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, PID* pid){
-    PID::overallHeading = target;
+    //PID::overallHeading = target;
     
     //for motion chaining
     bool chain;
@@ -242,20 +270,44 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         turnTimer.set_target(tpolyTimeoutOutput);
     }
 
-    double currentHeading = imu.get_heading();
-    double headingError = fmod(target - currentHeading + 360, 360);
-    if (headingError > 180) {
-        headingError -= 360;
+    double position = imu.get_heading();
+    double turnV;
+    if (position > 180){ //make only > if not working
+        position = ((360-position) * -1);
     }
+
+    if ((target < 0) && (position > 0)){
+        if ((position - target) >= 180){
+            target = target + 360;
+            position = imu.get_heading();
+            turnV = (target - position); 
+        }
+        else {
+            turnV = (abs(position) + abs(target));
+        }
+    }
+    else if ((target > 0) && (position < 0)) {
+        if ((target - position) >= 180){
+            position = imu.get_heading();
+            turnV = abs(abs(position) - abs(target));
+        }
+        else {
+            turnV = (abs(position) + target); 
+        }
+    }
+    else {
+        turnV = abs(abs(position) - abs(target));
+    }
+
     //for tpoly kd values
     double tpolykdoutputdeletelater;
     if (pid == &default_turn_pid){ //if default is used, nothing special requested
-        double tpolyKDOutput = turnKDTPOLY.evaluate(headingError);
+        double tpolyKDOutput = turnKDTPOLY.evaluate(turnV);
         tpolykdoutputdeletelater = tpolyKDOutput;
         pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
     }
     else if (pid == &default_turn_mogo_pid){
-        double tpolyKDOutput = turnMogoKDTPOLY.evaluate(headingError);
+        double tpolyKDOutput = turnMogoKDTPOLY.evaluate(turnV);
         pid->update_constants(std::nullopt, std::nullopt, tpolyKDOutput);
     }
 
@@ -271,11 +323,36 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         }
 
         //turn logic
-        currentHeading = imu.get_heading();
-        headingError = fmod(target - currentHeading + 360, 360);
-        if (headingError > 180) {
-            headingError -= 360;
+        double position = imu.get_heading();
+        double turnV;
+        if (position > 180){ //make only > if not working
+            position = ((360-position) * -1);
         }
+
+        if ((target < 0) && (position > 0)){
+            if ((position - target) >= 180){
+                target = target + 360;
+                position = imu.get_heading();
+                //turnV = (target - position); 
+            }
+            else {
+                //turnV = (abs(position) + abs(target));
+            }
+        }
+        else if ((target > 0) && (position < 0)) {
+            if ((target - position) >= 180){
+                position = imu.get_heading();
+                //turnV = abs(abs(position) - abs(target));
+            }
+            else {
+                //turnV = (abs(position) + target); 
+            }
+        }
+        else {
+            //turnV = abs(abs(position) - abs(target));
+        }
+
+        double headingError = target - position;
         double speed = pid->calculate(headingError, 127, "turn");
 
         //ouput speeds
@@ -283,7 +360,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         rchassis.move(-speed);
 
         //debugging with printing error to controller screen
-        con.print(0,0, "error: %lf", tpolykdoutputdeletelater);
+        con.print(0,0, "error: %lf", headingError);
         
         //settling
         if (pid->settled(5, 500)){
@@ -311,8 +388,8 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
         target = target + chainPos;
     }
 
-    double rightArcLength = (target/360)*2*M_PI*(radius-275);
-    double leftArcLength = (target/360)*2*M_PI*(radius+275);
+    double rightArcLength = (target/360)*2*M_PI*(radius-550);
+    double leftArcLength = (target/360)*2*M_PI*(radius+550);
 
     double speedProp = rightArcLength/leftArcLength; //will be a fraction less than zero bc we are arcing to the right
 
@@ -347,6 +424,8 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
     
     arcTimer.start();
 
+    con.clear();
+
     while (true){
         //wrap the init heading to 180,-180
         if (init_heading > 180){
@@ -361,14 +440,24 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
 
         double headingCorrect = (((currentRightPos+currentLeftPos)/2)*360) / (2*M_PI*radius);
         
-        double heading = imu.get_heading();
-        if (heading > 180) heading-= 360;
-        if (std::fabs((init_heading + headingCorrect) - heading) > 180){
-            if (heading > 0) init_heading += 360;
-            heading = imu.get_heading();
+        double heading = imu.get_heading(); 
+		if (heading > 180){
+            heading = heading - 360;
         }
-        double headingCorrectionError = fmod(((init_heading + headingCorrect) - heading) + 360, 360);
-        if (headingCorrectionError > 180) headingCorrectionError -=360;
+        if(((init_heading + headingCorrect) < 0) && (heading > 0)){
+            if((heading - (init_heading + headingCorrect)) >= 180){
+                init_heading = init_heading + 360;
+                heading = imu.get_heading();
+            } 
+        } else if (((init_heading + headingCorrect)> 0) && (heading < 0)){
+            if(((init_heading + headingCorrect) - heading) >= 180){
+            heading = imu.get_heading();
+            }
+        } 
+
+		double headingCorrectionError = init_heading + headingCorrect - heading;
+
+        con.print(0,0, "error: %lf", left_error);
 
         lchassis.move(pid->calculate(left_error, speed_limit.value_or(127)) + heading_correction_pid.calculate(headingCorrectionError));
         rchassis.move(speedProp*pid->calculate(left_error, speed_limit.value_or(127)) - heading_correction_pid.calculate(headingCorrectionError));
@@ -393,8 +482,8 @@ void arc_left(double target, double radius, std::optional<double> timeout, doubl
         target = target + chainPos;
     }
 
-    double rightArcLength = (target/360)*2*M_PI*(radius+275);
-    double leftArcLength = (target/360)*2*M_PI*(radius-275);
+    double rightArcLength = (target/360)*2*M_PI*(radius+550);
+    double leftArcLength = (target/360)*2*M_PI*(radius-550);
 
     double speedProp = leftArcLength/rightArcLength;
 
@@ -442,14 +531,22 @@ void arc_left(double target, double radius, std::optional<double> timeout, doubl
 
         double headingCorrect = (((currentRightPos+currentLeftPos)/2)*360) / (2*M_PI*radius);
 
-        double heading = imu.get_heading();
-        if (heading > 180) heading-= 360;
-        if (std::fabs((init_heading + headingCorrect) - heading) > 180){
-            if (heading > 0) init_heading += 360;
-            heading = imu.get_heading();
+        double heading = imu.get_heading(); 
+		if (heading > 180){
+            heading = heading - 360;
         }
-        double headingCorrectionError = fmod(((init_heading + headingCorrect) - heading) + 360, 360);
-        if (headingCorrectionError > 180) headingCorrectionError -=360;
+        if(((init_heading + headingCorrect) < 0) && (heading > 0)){
+            if((heading - (init_heading + headingCorrect)) >= 180){
+                init_heading = init_heading + 360;
+                heading = imu.get_heading();
+            } 
+        } else if (((init_heading + headingCorrect)> 0) && (heading < 0)){
+            if(((init_heading + headingCorrect) - heading) >= 180){
+            heading = imu.get_heading();
+            }
+        } 
+
+		double headingCorrectionError = init_heading + headingCorrect - heading;
 
         lchassis.move(speedProp*pid->calculate(left_error, speed_limit.value_or(127)) + heading_correction_pid.calculate(headingCorrectionError));
         rchassis.move(pid->calculate(left_error, speed_limit.value_or(127)) - heading_correction_pid.calculate(headingCorrectionError));
