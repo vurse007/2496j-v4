@@ -195,18 +195,18 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
             position = ((360-position) * -1);
         }
 
-        if ((target < 0) && (position > 0)){
-            if ((position - target) >= 180){
-                target = target + 360;
+        if ((initialHeading < 0) && (position > 0)){
+            if ((position - initialHeading) >= 180){
+                initialHeading = initialHeading + 360;
                 position = imu.get_heading();
-                //turnV = (target - position); 
+                //turnV = (initialHeading - position); 
             }
             else {
-                //turnV = (abs(position) + abs(target));
+                //turnV = (abs(position) + abs(initialHeading));
             }
         }
-        else if ((target > 0) && (position < 0)) {
-            if ((target - position) >= 180){
+        else if ((initialHeading > 0) && (position < 0)) {
+            if ((initialHeading - position) >= 180){
                 position = imu.get_heading();
                 //turnV = abs(abs(position) - abs(target));
             }
