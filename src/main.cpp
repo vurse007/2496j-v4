@@ -247,29 +247,28 @@ void competition_initialize() {}
  */
 void autonomous() {
 	//skills
-	// intake.move(127);
-	// delay(500);
-	// drive(600, M_TICKS, std::nullopt, 0, std::nullopt, true);
-	// turn(-90, std::nullopt, 0, std::nullopt);
-	// drive(-800, M_TICKS, std::nullopt, 0, 70, true);
-	// turn(20, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
-	// drive(700, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-	// turn(45, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
-	// drive(1100, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-	// turn(10, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
-	// drive(1200, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-	// lbPID==true;
-	// //delay(00);
-	// drive(-1200, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-	// turn(90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
-	// drive(500, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-	// //wall stake here
-	// drive(-500, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-	// turn(180, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
-	// drive(2300, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	delay(1500);
+	intake.move(0);
+	drive(500, M_TICKS, std::nullopt, 0, std::nullopt, true);
+	turn(-90, std::nullopt, 0, std::nullopt);
+	drive(-800, M_TICKS, std::nullopt, 0, 70, true);
+	turn(22, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	intake.move(127);
+	drive(3200, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	drive(350, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	lbPID=true;
+	delay(200);
+	drive(-1640, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	turn(90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(700, M_TICKS, 1000, 0, std::nullopt, true, M_DRIVE_MOGO);
+	drive(1800, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 
-	PID arcer(0.8, 0.03, 15.4, 1000, 1000, 70);
-	arc_left(90, 1000, 1500, 0, std::nullopt, &arcer);
+	//ladybrown shit
+	
+	drive(-400, M_TICKS, 1000, 0, std::nullopt, true, M_DRIVE_MOGO);
+	turn(180, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	//PID arcer(0.8, 0.03, 15.4, 1000, 1000, 70);
+	//arc_left(90, 1000, 1500, 0, std::nullopt, &arcer);
 }
 
 /**
