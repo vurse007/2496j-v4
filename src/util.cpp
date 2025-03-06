@@ -79,7 +79,7 @@ double inches_to_chassis_ticks(double inches, double wheel_diameter, double tick
 
 //lady brown macro util
 int lbPID = 0;
-double ladyBrownCorrectPosition = 130.00;
+double ladyBrownCorrectPosition = 132.00;
 double ladyBrownCorrectPosition_4 = 90.00;
 double ladyBrownCurrentPosition;
 double ladyBrownCorrectPosition_2= 180.00;
