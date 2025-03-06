@@ -179,7 +179,7 @@ void initialize() {
 	//updating PID objects
 	default_drive_pid.update_constants(0.8, 0.03, 15.4, 1000, 1000, 70);
 	default_drive_mogo_pid.update_constants(0.8, 0.03, 15.6,1000,1000,70);
-	heading_correction_pid.update_constants(0,0,0,1000,1000,127);
+	heading_correction_pid.update_constants(0.5,0,0,1000,1000,127);
 	default_turn_pid.update_constants(3,0.0001,24.2,1000, 1000, 127);
 	default_turn_mogo_pid.update_constants(4,0.0007,36,1000, 1000, 127);
 	default_arc_pid.update_constants(0.8, 0.03, 15.4, 1000, 1000, 70);
@@ -255,10 +255,11 @@ void autonomous() {
 	turn(21, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
 	intake.move(127);
 	drive(3200, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-	drive(500, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	delay(150);
 	lbPID=1;
+	drive(500, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 	delay(200);
-	drive(-1890, M_TICKS, std::nullopt, 0, 50, true, M_DRIVE_MOGO);
+	drive(-1960, M_TICKS, std::nullopt, 0, 50, true, M_DRIVE_MOGO);
 	intake.move(0);
 	lbPID=2;
 	turn(90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
@@ -270,15 +271,22 @@ void autonomous() {
 	
 	//ladybrown shit
 	
-	drive(-500, M_TICKS, 1000, 0, 70, true, M_DRIVE_MOGO);
+	drive(-550, M_TICKS, 1000, 0, 70, true, M_DRIVE_MOGO);
 	turn(180, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
-	drive(2200, M_TICKS, std::nullopt, 0, 90, true, M_DRIVE_MOGO);
-	turn(60, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(1200, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	drive(1000, M_TICKS, std::nullopt, 0, 90, false, M_DRIVE_MOGO);
+	turn(50, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
 	drive(400, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
-	turn(-32, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	turn(-37, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
 	delay(100);
 	mogo.set_value(false);
-	drive(-600, M_TICKS, 500, 0, 70, true, M_DRIVE_MOGO);
+	drive(-600, M_TICKS, 700, 0, 70, false, M_DRIVE_MOGO);
+	drive(800);
+	turn(0);
+	lbPID=1;
+	drive(2800, M_TICKS, std::nullopt, 3);
+	drive(300, M_TICKS, std::nullopt, 0, 100);
+
 	//PID arcer(0.8, 0.03, 15.4, 1000, 1000, 70);
 	//arc_left(90, 1000, 1500, 0, std::nullopt, &arcer);
 }

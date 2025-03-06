@@ -371,7 +371,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         con.print(0,0, "error: %lf", headingError);
         
         //settling
-        if (pid->settled(0.5, 100)){
+        if (pid->settled(1, 150)){
             break;
         }
 
