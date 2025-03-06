@@ -177,7 +177,8 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
     driveTimer.start();
 
     con.clear();
-
+    double speed=0;
+    double prev_speed;
     while (true){
         //force timeout check
         if (driveTimer.targetReached()){
@@ -223,7 +224,13 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         //drive calculations
         double currentpos = (FR.get_position() + FL.get_position() + MR.get_position() + ML.get_position() + BR.get_position() + BL.get_position())/6;
         double driveError = target - currentpos;
-        double speed = pid->calculate(driveError, speed_limit.value_or(127), "drive");
+        prev_speed=speed;
+        speed = pid->calculate(driveError, speed_limit.value_or(127), "drive");
+        if(speed-prev_speed>5 && driveError>target-200)
+        {
+            speed=prev_speed+5;
+        }
+        
 
         //ouput speeds
         lchassis.move(speed + headingCorrection);
@@ -321,6 +328,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         if (turnTimer.targetReached()){
             break;
         }
+        con.print(0,0, "prt: %lf", imu.get_heading());
 
         //turn logic
         double position = imu.get_heading();
@@ -363,7 +371,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         con.print(0,0, "error: %lf", headingError);
         
         //settling
-        if (pid->settled(2, 80)){
+        if (pid->settled(0.5, 100)){
             break;
         }
 

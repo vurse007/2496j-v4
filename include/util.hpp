@@ -44,9 +44,11 @@ extern tPoly driveMogoKDTPOLY;
 double inches_to_chassis_ticks(double inches, double wheel_diameter = 3.25, double ticks_per_rev = 300);
 
 //lady brown macro util
-extern bool lbPID;
+extern int lbPID;
 extern double ladyBrownCorrectPosition;
-extern double ladyBrownCurrentPosition;
+extern double ladyBrownCorrectPosition_2;
+extern double ladyBrownCorrectPosition_3;
+extern double ladyBrownCorrectPosition_4;
 extern PID ladyBrownPID;
 void ladyBrownTask();
 

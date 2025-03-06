@@ -104,17 +104,17 @@ void driverProfileManu(){
 
 	//lady brown code below
 	if (con.get_digital_new_press(E_CONTROLLER_DIGITAL_UP)){
-		lbPID = true;
+		lbPID = 1;
 	}
 	
 	else{
 		if (con.get_digital(E_CONTROLLER_DIGITAL_L1)){
 			ldb.move(127);
-			lbPID = false;
+			lbPID = 0;
 		}
 		else if (con.get_digital(E_CONTROLLER_DIGITAL_L2)){
 			ldb.move(-127);
-			lbPID = false;
+			lbPID = 0;
 		}
 		else{
 			ldb.move(0);
@@ -247,30 +247,38 @@ void competition_initialize() {}
  */
 void autonomous() {
 	//skills
-	delay(1500);
+	//delay(1500);
 	intake.move(0);
-	drive(500, M_TICKS, std::nullopt, 0, std::nullopt, true);
+	drive(500, M_TICKS, std::nullopt, 0, 100, true);
 	turn(-90, std::nullopt, 0, std::nullopt);
-	drive(-800, M_TICKS, std::nullopt, 0, 70, true);
-	turn(22, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(-850, M_TICKS, std::nullopt, 0, 70, true);
+	turn(21, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
 	intake.move(127);
 	drive(3200, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-	drive(350, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	drive(500, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 	lbPID=1;
 	delay(200);
-	drive(-1640, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	drive(-1890, M_TICKS, std::nullopt, 0, 50, true, M_DRIVE_MOGO);
 	intake.move(0);
 	lbPID=2;
 	turn(90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
 	intake.move(127);
-	drive(700, M_TICKS, 1000, 0, 70, true, M_DRIVE_MOGO);
-	drive(1800, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
-
+	drive(750, M_TICKS, 1000, 0, 50, true, M_DRIVE_MOGO);
+	lbPID=3;
+	delay(400);
+	lbPID=4;
+	
 	//ladybrown shit
 	
-	drive(-400, M_TICKS, 1000, 0, std::nullopt, true, M_DRIVE_MOGO);
+	drive(-500, M_TICKS, 1000, 0, 70, true, M_DRIVE_MOGO);
 	turn(180, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
-	drive(1800, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
+	drive(2200, M_TICKS, std::nullopt, 0, 90, true, M_DRIVE_MOGO);
+	turn(60, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(400, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
+	turn(-32, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	delay(100);
+	mogo.set_value(false);
+	drive(-600, M_TICKS, 500, 0, 70, true, M_DRIVE_MOGO);
 	//PID arcer(0.8, 0.03, 15.4, 1000, 1000, 70);
 	//arc_left(90, 1000, 1500, 0, std::nullopt, &arcer);
 }
