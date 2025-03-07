@@ -83,7 +83,7 @@ double ladyBrownCorrectPosition = 131.00;
 double ladyBrownCorrectPosition_4 = 90.00;
 double ladyBrownCurrentPosition;
 double ladyBrownCorrectPosition_2= 300.00;
-double ladyBrownCorrectPosition_3= 290.00;
+double ladyBrownCorrectPosition_3= 260.00;
 PID ladyBrownPID(2.5,0,0,10, 100, 127);
 
 void ladyBrownTask(){
@@ -94,22 +94,26 @@ void ladyBrownTask(){
         if (lbPID==1)
         {
             lberror = (ladyBrownCorrectPosition - ladyBrownCurrentPosition);
+            glb::ldb.move(0.7*ladyBrownPID.calculate(lberror));
         }
         if (lbPID==2)
         {
             lberror = (ladyBrownCorrectPosition_2 - ladyBrownCurrentPosition);
+            glb::ldb.move(2*ladyBrownPID.calculate(lberror));
         }
         if (lbPID==3)
         {
             lberror = (ladyBrownCorrectPosition_3 - ladyBrownCurrentPosition);
+            glb::ldb.move(2*ladyBrownPID.calculate(lberror));
         }
         if (lbPID==4)
         {
             lberror = (ladyBrownCorrectPosition_4 - ladyBrownCurrentPosition);
+            glb::ldb.move(ladyBrownPID.calculate(lberror));
         }
-		if (lbPID != 0){
-			glb::ldb.move(0.7*ladyBrownPID.calculate(lberror));
-		}
+		// if (lbPID != 0){
+		// 	glb::ldb.move(0.7*ladyBrownPID.calculate(lberror));
+		// }
         //glb::con.print(0,0, "err: %lf", lberror);
 	}
 }
