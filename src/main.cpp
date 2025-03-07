@@ -305,12 +305,12 @@ void autonomous() {
 	drive(-300, M_TICKS, std::nullopt, 0, 50, true, M_DRIVE_MOGO);
 	lbPID=2;
 	delay(1000);
-	drive(150, M_TICKS, std::nullopt, 0, 50, true, M_DRIVE_MOGO);
+	drive(150, M_TICKS, std::nullopt, 2, 50, true, M_DRIVE_MOGO);
 	lbPID=4;
-	delay(200);
-	drive(-150, M_TICKS, std::nullopt, 0, 50, true, M_DRIVE_MOGO);
+	//delay(200);
+	drive(-150, M_TICKS, std::nullopt, 2, 50, true, M_DRIVE_MOGO);
 	turn(138, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
-	drive(1550, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
+	drive(1550, M_TICKS, std::nullopt, 0, std::nullopt, true, M_DRIVE_MOGO);
 	turn(-135, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
 	intake.move(0);
 	drive(2500, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
