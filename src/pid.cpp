@@ -119,6 +119,8 @@ PID heading_correction_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 PID default_arc_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 PID default_arc_mogo_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 
+double prev_turn=0;
+
 void drive(double target, std::string_view units, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, bool auto_clamp, PID* pid){
 
     //based on value passed into the function, convert into motor encoder ticks
@@ -218,7 +220,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         else {
             //turnV = abs(abs(position) - abs(target));
         }
-        double headingError = initialHeading - position;
+        double headingError = prev_turn - position;
         double headingCorrection = heading_correction_pid.calculate(headingError);
 
         //drive calculations
@@ -259,6 +261,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
     //PID::overallHeading = target;
     
     //for motion chaining
+    prev_turn=target;
     bool chain;
     if (chainPos == 0){
         chain = false;
