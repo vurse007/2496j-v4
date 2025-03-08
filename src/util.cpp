@@ -77,6 +77,9 @@ double inches_to_chassis_ticks(double inches, double wheel_diameter, double tick
     return (inches)*(ticks_per_rev/(M_PI*wheel_diameter));
 }
 
+
+
+
 //lady brown macro util
 int lbPID = 0;
 double ladyBrownCorrectPosition = 131.00;
@@ -99,7 +102,7 @@ void ladyBrownTask(){
         if (lbPID==2)
         {
             lberror = (ladyBrownCorrectPosition_2 - ladyBrownCurrentPosition);
-            glb::ldb.move(2*ladyBrownPID.calculate(lberror));
+            glb::ldb.move(0.7*ladyBrownPID.calculate(lberror));
         }
         if (lbPID==3)
         {
