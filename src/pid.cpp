@@ -386,7 +386,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
 }
 
 void arc_right(double target, double radius, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, PID* pid){
-    bool chain;
+    bool chain = false;
     double trueTheta;
     if (chainPos == 0){
         chain = false;
@@ -396,10 +396,10 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
         target = target + chainPos;
     }
 
-    double rightArcLength = (target/360)*2*M_PI*(radius-550);
-    double leftArcLength = (target/360)*2*M_PI*(radius+550);
+    double rightArcLength = (target/360)*2*M_PI*(radius-400);
+    double leftArcLength = (target/360)*2*M_PI*(radius+400);
 
-    double speedProp = rightArcLength/leftArcLength; //will be a fraction less than zero bc we are arcing to the right
+    double speedProp = rightArcLength/leftArcLength;
 
     // taylor polynomials
     timer arcTimer(-1);
@@ -434,6 +434,8 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
 
     con.clear();
 
+    int count;
+
     while (true){
         //wrap the init heading to 180,-180
         if (init_heading > 180){
@@ -452,25 +454,30 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
 		if (heading > 180){
             heading = heading - 360;
         }
-        if(((init_heading + headingCorrect) < 0) && (heading > 0)){
-            if((heading - (init_heading + headingCorrect)) >= 180){
-                init_heading = init_heading + 360;
+        if(((target + headingCorrect) < 0) && (heading > 0)){
+            if((heading - (target + headingCorrect)) >= 180){
+                target = target + 360;
                 heading = imu.get_heading();
             } 
-        } else if (((init_heading + headingCorrect)> 0) && (heading < 0)){
-            if(((init_heading + headingCorrect) - heading) >= 180){
-            heading = imu.get_heading();
+        } else if (((target + headingCorrect)> 0) && (heading < 0)){
+            if(((target + headingCorrect) - target) >= 180){
+                heading = imu.get_heading();
             }
         } 
 
 		double headingCorrectionError = init_heading + headingCorrect - heading;
 
-        con.print(0,0, "error: %lf", left_error);
+        con.print(0,0, "error: %lf", right_error);
 
         lchassis.move(pid->calculate(left_error, speed_limit.value_or(127)) + heading_correction_pid.calculate(headingCorrectionError));
         rchassis.move(speedProp*pid->calculate(left_error, speed_limit.value_or(127)) - heading_correction_pid.calculate(headingCorrectionError));
 
-        if (default_arc_pid.settled(20,500)) break;
+        if (abs(left_error) < 1000){
+            count++;
+        }
+        if (count >= 200){
+            break;
+        }
 
         if (chain == true && fabs(heading - init_heading) >= trueTheta) break;
 
@@ -480,7 +487,7 @@ void arc_right(double target, double radius, std::optional<double> timeout, doub
 }
 
 void arc_left(double target, double radius, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, PID* pid){
-    bool chain;
+    bool chain = false;
     double trueTheta;
     if (chainPos == 0){
         chain = false;
@@ -490,8 +497,8 @@ void arc_left(double target, double radius, std::optional<double> timeout, doubl
         target = target + chainPos;
     }
 
-    double rightArcLength = (target/360)*2*M_PI*(radius+550);
-    double leftArcLength = (target/360)*2*M_PI*(radius-550);
+    double rightArcLength = (target/360)*2*M_PI*(radius+400);
+    double leftArcLength = (target/360)*2*M_PI*(radius-400);
 
     double speedProp = leftArcLength/rightArcLength;
 
@@ -522,8 +529,10 @@ void arc_left(double target, double radius, std::optional<double> timeout, doubl
 
     pid->reset_PID();
     heading_correction_pid.reset_PID();
+    con.clear();
 
     arcTimer.start();
+    int count;
 
     while (true){
         //wrap the init heading to 180,-180
@@ -543,23 +552,29 @@ void arc_left(double target, double radius, std::optional<double> timeout, doubl
 		if (heading > 180){
             heading = heading - 360;
         }
-        if(((init_heading + headingCorrect) < 0) && (heading > 0)){
-            if((heading - (init_heading + headingCorrect)) >= 180){
-                init_heading = init_heading + 360;
+        if(((target + headingCorrect)< 0) && (heading > 0)){
+            if((heading - (target + headingCorrect)) >= 180){
+                headingCorrect = headingCorrect + 360;
                 heading = imu.get_heading();
             } 
-        } else if (((init_heading + headingCorrect)> 0) && (heading < 0)){
-            if(((init_heading + headingCorrect) - heading) >= 180){
-            heading = imu.get_heading();
+        } else if (((target + headingCorrect) > 0) && (heading < 0)){
+            if(((target + headingCorrect) - heading) >= 180){
+                heading = imu.get_heading();
             }
-        } 
+        }
 
 		double headingCorrectionError = init_heading + headingCorrect - heading;
 
         lchassis.move(speedProp*pid->calculate(left_error, speed_limit.value_or(127)) + heading_correction_pid.calculate(headingCorrectionError));
         rchassis.move(pid->calculate(left_error, speed_limit.value_or(127)) - heading_correction_pid.calculate(headingCorrectionError));
 
-        if (default_arc_pid.settled(20,500)) break;
+        if (abs(left_error) < 1000){
+            count++;
+        }
+        if (count >= 200){
+            break;
+        }
+        con.print(0,0, "err:%lf", left_error);
 
         if (chain == true && fabs(heading - init_heading) >= trueTheta) break;
 
