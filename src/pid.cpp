@@ -171,7 +171,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
     heading_correction_pid.reset_PID();
 
     double initialHeading = imu.get_heading();
-    if (initialHeading > 180){
+    if (initialHeading >= 180){
 		initialHeading = ((360-initialHeading) * -1);
 	}
     //change it to global tracker
@@ -194,7 +194,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         //heading correction
         double position = imu.get_heading();
         //double turnV;
-        if (position > 180){ //make only > if not working
+        if (position >= 180){ //make only > if not working
             position = ((360-position) * -1);
         }
 
@@ -282,7 +282,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
 
     double position = imu.get_heading();
     double turnV;
-    if (position > 180){ //make only > if not working
+    if (position >= 180){ //make only > if not working
         position = ((360-position) * -1);
     }
 
@@ -336,7 +336,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         //turn logic
         double position = imu.get_heading();
         double turnV;
-        if (position > 180){ //make only > if not working
+        if (position >= 180){ //make only > if not working
             position = ((360-position) * -1);
         }
 
