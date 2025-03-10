@@ -114,9 +114,7 @@ void ladyBrownTask(){
             lberror = (ladyBrownCorrectPosition_4 - ladyBrownCurrentPosition);
             glb::ldb.move(ladyBrownPID.calculate(lberror));
         }
-		// if (lbPID != 0){
-		// 	glb::ldb.move(0.7*ladyBrownPID.calculate(lberror));
-		// }
+		
         //glb::con.print(0,0, "err: %lf", lberror);
 	}
 }
