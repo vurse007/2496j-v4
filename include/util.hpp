@@ -59,3 +59,4 @@ extern int cur_pos;
 extern int prev_pos;
 extern bool stalled;
 void stallProtection();
+void stallProtectionTask();

@@ -129,22 +129,22 @@ bool stalled=false;
 void stallProtection() {
    
     prev_pos=cur_pos;
-   pros::delay(50);
-   cur_pos=glb::intake.get_position();
+    pros::delay(50);
+    cur_pos=glb::intake.get_position();
    
-   if(abs(cur_pos-prev_pos)<5 && lbPID==false)
-   {
+    if(abs(cur_pos-prev_pos)<5 && lbPID==false)
+    {
         cnt++;
         glb::con.print(0,0, "prt: %lf", cnt);
         
-   }
-   if(cnt>=5)
-   {
+    }
+    if(cnt>=5)
+    {
         stalled=true;
         cnt=0;
-   }
-   if(stalled)
-   {
+    }
+    if(stalled)
+    {
         glb::intake.move(-127);
         rev_cnt++;
         if(rev_cnt>=5)
@@ -153,11 +153,46 @@ void stallProtection() {
             rev_cnt=0;
         }
 
-   }
-   else
-   {
-    glb::intake.move(127);
-   }
+    }
+    else
+    {
+        glb::intake.move(127);
+    }
 
-   
+}
+void stallProtectionTask() {
+
+    while (1){
+        prev_pos=cur_pos;
+        pros::delay(50);
+        cur_pos=glb::intake.get_position();
+        double targVelo = glb::intake.get_target_velocity();
+    
+        if(abs(cur_pos-prev_pos)<5 && lbPID==false)
+        {
+            cnt++;
+            glb::con.print(0,0, "prt: %lf", cnt);
+            
+        }
+        if(cnt>=5)
+        {
+            stalled=true;
+            cnt=0;
+        }
+        if(stalled)
+        {
+            glb::intake.move(-127);
+            rev_cnt++;
+            if(rev_cnt>=5)
+            {
+                stalled=false;
+                rev_cnt=0;
+            }
+
+        }
+        else
+        {
+            glb::intake.move(targVelo);
+        }
+    }
 }

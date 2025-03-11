@@ -169,7 +169,7 @@ void initialize() {
 	ldb.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 
 	//starting tasks
-	pros::Task stallProtector(stallProtection);
+	pros::Task stallProtector(stallProtectionTask);
 	pros::Task ladyBrownMacroTask(ladyBrownTask);
 	//pros::Task cs_eject_redTask(cs_eject_red);
 	//pros::Task cs_eject_blueTask(cs_eject_blue);
