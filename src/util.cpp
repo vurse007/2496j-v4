@@ -124,75 +124,91 @@ void ladyBrownTask(){
 int cnt=0;
 int rev_cnt=0;
 int cur_pos;
-int prev_pos;
+int prev_pos=-1;
 bool stalled=false;
-void stallProtection() {
-   
-    prev_pos=cur_pos;
-    pros::delay(50);
+
+
+void stallProtection (){
     cur_pos=glb::intake.get_position();
-   
-    if(abs(cur_pos-prev_pos)<5 && lbPID==false)
-    {
+   if(cur_pos==prev_pos && lbPID==false)
+   {
         cnt++;
         glb::con.print(0,0, "prt: %lf", cnt);
         
-    }
-    if(cnt>=5)
-    {
+   }
+   else 
+   {
+    prev_pos=cur_pos;
+    cnt=0;
+   }
+   if(cnt>=5)
+   {
         stalled=true;
         cnt=0;
     }
     if(stalled)
     {
         glb::intake.move(-127);
+        //return false;
         rev_cnt++;
-        if(rev_cnt>=5)
+        if(rev_cnt>=30 )
         {
             stalled=false;
             rev_cnt=0;
+            cnt=0;
         }
 
+   }
+   else
+   {
+    glb::intake.move(127);
+    //cnt=0;
+    //rev_cnt=0;
+   }
+}
+bool sensed=false;
+int cnt2=0;
+int revcnt=0;
+bool eject_b=true;
+void eject_blue()
+{
+  while(eject_b)
+  {
+    glb::colorsort.set_led_pwm(70);
+    if(glb::colorsort.get_hue()>200 && glb::colorsort.get_hue()<260 && glb::colorsort.get_proximity()>100)
+    {
+            //glb::intake.move(-127);
+        sensed=true;    
     }
     else
     {
-        glb::intake.move(127);
+        cnt=0;
+        sensed=false;
     }
-
-}
-void stallProtectionTask() {
-
-    while (1){
-        prev_pos=cur_pos;
-        pros::delay(50);
-        cur_pos=glb::intake.get_position();
-        double targVelo = glb::intake.get_target_velocity();
+   if (sensed==true)
+   { 
+    cnt++;
+   }
+   if(cnt>6000)
+   {
+    glb::intake.move(-127);
+    revcnt++;
     
-        if(abs(cur_pos-prev_pos)<5 && lbPID==false)
-        {
-            cnt++;
-            glb::con.print(0,0, "prt: %lf", cnt);
-            
-        }
-        if(cnt>=5)
-        {
-            stalled=true;
-            cnt=0;
-        }
-        if(stalled)
-        {
-            glb::intake.move(-127);
-            rev_cnt++;
-            if(rev_cnt>=5)
-            {
-                stalled=false;
-                rev_cnt=0;
-            }
-
-        }
-        else
-        {
-            glb::intake.move(targVelo);
-        }
-    }
+   }
+   else
+   {
+    
+    revcnt=0;
+    glb::intake.move(127);
+   }
+   
+  }
 }
+
+   
+
+
+   //prev_pos=cur_pos;
+   
+
+   

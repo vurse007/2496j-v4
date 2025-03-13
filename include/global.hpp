@@ -16,6 +16,7 @@ namespace glb{
     #define P_MOGO 'A'
     #define P_INTAKE_LIFT 'B'
     #define P_DOINKER 'D'
+    #define P_DOINKER_2 'C'
 
     #define P_IMU 20
     #define P_LDB_ROTATION 6
@@ -39,6 +40,7 @@ namespace glb{
     extern pros::ADIDigitalOut mogo;
     extern pros::ADIDigitalOut intake_lift;
     extern pros::ADIDigitalOut doinker;
+    extern pros::ADIDigitalOut doinker2;
 
     extern pros::Imu imu;
     extern pros::Rotation ldbrotation;

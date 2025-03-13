@@ -59,4 +59,9 @@ extern int cur_pos;
 extern int prev_pos;
 extern bool stalled;
 void stallProtection();
-void stallProtectionTask();
+
+extern bool sensed;
+extern int cnt2;
+extern int revcnt;
+extern bool eject_b;
+void eject_blue();
