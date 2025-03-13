@@ -121,7 +121,7 @@ PID default_arc_mogo_pid(0.0, 0.0, 0.0, 0.0, 0.0);
 
 double prev_turn=0;
 
-void drive(double target, std::string_view units, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, bool auto_clamp, PID* pid){
+void drive(double target, std::string_view units, std::optional<double> timeout, double chainPos, std::optional<double> speed_limit, bool auto_clamp, bool intake_spin, PID* pid){
 
     //based on value passed into the function, convert into motor encoder ticks
     if (units == M_TICKS){
@@ -171,7 +171,7 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
     heading_correction_pid.reset_PID();
 
     double initialHeading = imu.get_heading();
-    if (initialHeading >= 180){
+    if (initialHeading > 180){
 		initialHeading = ((360-initialHeading) * -1);
 	}
     //change it to global tracker
@@ -186,15 +186,16 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
         if (driveTimer.targetReached()){
             break;
         }
-        if (auto_clamp==true && autoclamp.get()<60)
+        if (auto_clamp==true && autoclamp.get()<62)
         {
+            
             mogo.set_value(true);
         }
 
         //heading correction
         double position = imu.get_heading();
         //double turnV;
-        if (position >= 180){ //make only > if not working
+        if (position > 180){ //make only > if not working
             position = ((360-position) * -1);
         }
 
@@ -221,8 +222,14 @@ void drive(double target, std::string_view units, std::optional<double> timeout,
             //turnV = abs(abs(position) - abs(target));
         }
         double headingError = prev_turn - position;
+        if(headingError>180)
+        {
+            headingError=-1*(360-headingError);
+        }
         double headingCorrection = heading_correction_pid.calculate(headingError);
-
+        // if(intake_spin==true){
+        //     stallProtection();
+        // }
         //drive calculations
         double currentpos = (FR.get_position() + FL.get_position() + MR.get_position() + ML.get_position() + BR.get_position() + BL.get_position())/6;
         double driveError = target - currentpos;
@@ -282,7 +289,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
 
     double position = imu.get_heading();
     double turnV;
-    if (position >= 180){ //make only > if not working
+    if (position > 180){ //make only > if not working
         position = ((360-position) * -1);
     }
 
@@ -336,7 +343,7 @@ void turn(double target, std::optional<double> timeout, double chainPos, std::op
         //turn logic
         double position = imu.get_heading();
         double turnV;
-        if (position >= 180){ //make only > if not working
+        if (position > 180){ //make only > if not working
             position = ((360-position) * -1);
         }
 

@@ -18,7 +18,7 @@ namespace glb{
     pros::ADIDigitalOut mogo(P_MOGO, false);
     pros::ADIDigitalOut intake_lift(P_INTAKE_LIFT, false);
     pros::ADIDigitalOut doinker(P_DOINKER, false);
-
+    pros::ADIDigitalOut doinker2(P_DOINKER_2, false);
     pros::Imu imu(P_IMU);
     pros::Rotation ldbrotation(P_LDB_ROTATION);
     pros::Optical colorsort(P_COLORSORT);

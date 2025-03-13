@@ -57,7 +57,7 @@ extern PID default_arc_pid;
 extern PID default_arc_mogo_pid;
 
 // Function declaration for drive
-void drive(double target, std::string_view units = M_TICKS, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, bool auto_clamp=false, PID* pid = &default_drive_pid);
+void drive(double target, std::string_view units = M_TICKS, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, bool auto_clamp=false, bool intake_spin=true, PID* pid = &default_drive_pid);
 
 //function declaration for absolute turns
 void turn(double target, std::optional<double> timeout = std::nullopt, double chainPos = 0, std::optional<double> speed_limit = std::nullopt, PID* pid = &default_turn_pid);
