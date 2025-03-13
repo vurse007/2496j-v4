@@ -158,7 +158,29 @@ void stallProtection() {
     {
         glb::intake.move(127);
     }
+<<<<<<< Updated upstream
 
+=======
+   if (sensed==true)
+   { 
+    cnt++;
+   } 
+   //na
+   if(cnt>6000)
+   {
+    glb::intake.move(-127);
+    revcnt++;
+    
+   }
+   else
+   {
+    
+    revcnt=0;
+    glb::intake.move(127);
+   }
+   
+  }
+>>>>>>> Stashed changes
 }
 void stallProtectionTask() {
 
