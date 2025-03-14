@@ -107,7 +107,7 @@ void driverProfileManu(){
 
 	//lady brown code below
 	if (con.get_digital_new_press(E_CONTROLLER_DIGITAL_UP)){
-		lbPID = 3;     //this is just so we pass insepction.
+		lbPID = 1;     //this is just so we pass insepction.
 	}
 	
 	else{
