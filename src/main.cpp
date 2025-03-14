@@ -162,8 +162,15 @@ void on_center_button() {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+
+int autonSequencer = 0;
+bool autonFlag = false;
+bool timerStarted = false;
+timer autonSelectorTimer(3000);
+
 void initialize() {
 	pros::lcd::initialize();
+	con.clear();
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
@@ -219,6 +226,57 @@ void initialize() {
 	driveMogoKDTPOLY.update_coefficients({
 		15.6
 	}); //constant kd value
+
+
+	//auton selector with lim
+	while (autonFlag == false){
+
+		//no more than five options
+		if (autonSequencer > 5){
+			autonSequencer = 0;
+		}
+
+		if (autoselect.get_value() == true){
+			delay(100);
+			autonSequencer++;
+			timerStarted = false;
+		}
+
+		if (autonSequencer == 0){
+			pros::lcd::set_text(2, "No Auto Selected");
+			con.print(0, 0, "No Auto Selected");
+		}
+		else if (autonSequencer == 1){
+			pros::lcd::set_text(2, "Red Goal");
+			con.print(0, 0, "Red Goal");
+		}
+		else if (autonSequencer == 2){
+			pros::lcd::set_text(2, "Blue Goal");
+			con.print(0, 0, "Blue Goal");
+		}
+		else if (autonSequencer == 3){
+			pros::lcd::set_text(2, "Red Ring");
+			con.print(0, 0, "Red Ring");
+		}
+		else if (autonSequencer == 4){
+			pros::lcd::set_text(2, "Blue Ring");
+			con.print(0, 0, "Blue Ring");
+		}
+		else if (autonSequencer == 5){
+			pros::lcd::set_text(2, "Skills");
+			con.print(0, 0, "Skills");
+		}
+		
+
+		if (autonSequencer > 0 && timerStarted == false){
+			autonSelectorTimer.start();
+			timerStarted = true;
+		}
+		else if (autonSelectorTimer.targetReached() == true && timerStarted == true){
+			//if you stayed on one for long enough
+			autonFlag = true;
+		}
+	}
 }
 
 /**
@@ -251,6 +309,40 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+
+
+	if (autonSequencer == 0){
+		//if u didnt press the ls, skip auto
+
+	}
+	else if(autonSequencer == 1){
+		//red goal
+
+	}
+	else if(autonSequencer == 2){
+		//blue goal
+
+	}
+	else if(autonSequencer == 3){
+		//red ring
+
+	}
+	else if(autonSequencer == 4){
+		//blue ring
+
+	}
+	else if(autonSequencer == 5){
+		//skills
+
+	}
+
+
+
+
+
+
+
+
 
 
 	//ringsort test

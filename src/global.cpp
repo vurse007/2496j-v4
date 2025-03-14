@@ -29,4 +29,6 @@ namespace glb{
 
     pros::Controller con(pros::E_CONTROLLER_MASTER);
 
+    pros::ADIDigitalIn autoselect(P_AUTOSELECT);
+
 }

@@ -25,6 +25,8 @@ namespace glb{
     #define P_X_POD 16
     #define P_Y_POD 14
 
+    #define P_AUTOSELECT 'F'
+
     extern pros::Motor FR;
     extern pros::Motor FL;
     extern pros::Motor MR;
@@ -51,5 +53,7 @@ namespace glb{
     // extern pros::Rotation y_pod;
 
     extern pros::Controller con;
+
+    extern pros::ADIDigitalIn autoselect;
 
 }

@@ -23,7 +23,7 @@ double timer::getTime(){
 
 
 bool timer::targetReached(){
-    if (this->getTime() >= this->targetTime){
+    if (this->getTime() >= this->targetTime && this->running == true){
         this->running = false;
         return true;
     } else{
