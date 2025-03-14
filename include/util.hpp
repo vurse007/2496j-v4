@@ -65,3 +65,10 @@ extern int cnt2;
 extern int revcnt;
 extern bool eject_b;
 void eject_blue();
+
+
+extern bool sense_red;
+extern int cnt3;
+extern int revcnt2;
+extern bool eject_r;
+void eject_red();

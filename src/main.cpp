@@ -107,7 +107,7 @@ void driverProfileManu(){
 
 	//lady brown code below
 	if (con.get_digital_new_press(E_CONTROLLER_DIGITAL_UP)){
-		lbPID = 1;
+		lbPID = 3;     //this is just so we pass insepction.
 	}
 	
 	else{
@@ -183,7 +183,7 @@ void initialize() {
 	//starting tasks
 	pros::Task stallProtector(stallProtection);
 	pros::Task ladyBrownMacroTask(ladyBrownTask);
-	pros::Task cs_eject_blueTask(eject_blue);
+	//pros::Task cs_eject_blueTask(eject_blue);
 	//pros::Task cs_eject_blueTask(cs_eject_blue);
 	//pros:: Task csauto_eject_redTask(csauto_eject_red);
 	//pros:: Task csauto_eject_blueTask(csauto_eject_blue);
@@ -293,7 +293,7 @@ void disabled() {}
  * competition-specific initialization routines, such as an autonomous selector
  * on the LCD.
  *
- * This task will exit when the robot is enabled and autonomous or opcontrol
+ * his task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
 void competition_initialize() {}
@@ -336,67 +336,84 @@ void autonomous() {
 		//skills
 		skills();
 	}
-
+	eject_r=true;
+	pros::Task cs_eject_redTask(eject_red);
+	
 
 	//goal side
-	// drive(350);
-	// turn(-60);
+	// drive(380);
+	// turn(-63);
 	// lbPID=2;
 	// delay(700);
 	// drive(-1200, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
 	// lbPID=4;
-	// turn(45, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	// turn(50, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
 	// drive(750, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
 	// doinker2.set_value(true);
-	// delay(200);
-	// turn(70, std::nullopt, 5, std::nullopt,M_TURN_MOGO);
+	// delay(100);
+	// turn(65, std::nullopt, 5, std::nullopt,M_TURN_MOGO);
 	// drive(75, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
 	// doinker.set_value(true);
-	// delay(200);
+	// delay(100);
 	// drive(-1300, M_TICKS, std::nullopt, 50, 127, true, M_DRIVE_MOGO);
 	// drive(-200, M_TICKS, std::nullopt, 0, 30, true, M_DRIVE_MOGO);
 	// doinker.set_value(false);
 	// doinker2.set_value(false);
-	// delay(600);
-	// turn(35, std::nullopt, 5, std::nullopt,M_TURN_MOGO);
-	// intake.move(127);
-	// drive(500, M_TICKS, std::nullopt, 20, 30, true, M_DRIVE_MOGO);
-	// intake.move(127);
-	// turn(150, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
-	// drive(1300, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
-	// turn(-112, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
-	// drive(1300, M_TICKS, std::nullopt, 50, 127, true, M_DRIVE_MOGO);
+	// delay(400);
+	// turn(50, std::nullopt, 5, std::nullopt,M_TURN_MOGO);
+	// eject_b=true;
+	// pros::Task cs_eject_blueTask(eject_blue);
+	// drive(500, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
+
+	// turn(160, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	// drive(1600, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
+	// turn(-110, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	// drive(1200, M_TICKS, std::nullopt, 50, 127, true, M_DRIVE_MOGO);
 	// drive(200, M_TICKS, 500, 0, 30, true, M_DRIVE_MOGO);
-	// drive(200, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
 	// delay(500);
-	// drive(-400, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
-	// drive(300, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
+	// drive(-400, M_TICKS, 500, 0, 127, true, M_DRIVE_MOGO);
+	// turn(45, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	
+	// mogo.set_value(false);
+	// lbPID=2;
+	// drive(2000);
+
+
+
+
+
+
+
+
 
 
 	//ring side
-	drive(400, M_TICKS, 1000, 0, 70, true, M_DRIVE_MOGO);
-	turn(62);
-	lbPID=2;
-	delay(700);
-	drive(-1400, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
-	lbPID=4;
-	turn(-115, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
-	eject_b=true;
-	pros::Task cs_eject_blueTask(eject_blue);
-	heading_correction_pid.kP = 0;
-	heading_correction_pid.kI = 0;
-	heading_correction_pid.kD = 0;
-	arc_left(57, 800, 900, 30, 127, M_ARC_MOGO);
-	drive(600);
-	turn(71, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
-	drive(500, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
-	turn(107, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
-	drive(1400, M_TICKS, std::nullopt, 50, 127, true, M_DRIVE_MOGO);
-	drive(500, M_TICKS, 800, 0, 60, true, M_DRIVE_MOGO);
-	drive(-400, M_TICKS, std::nullopt, 0, 127, true,  M_DRIVE_MOGO);
-	turn(0, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	// drive(400, M_TICKS, 1000, 0, 70, true, M_DRIVE_MOGO);
+	// turn(62);
+	// lbPID=2;
+	// delay(700);
+	// drive(-1400, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
+	// lbPID=4;
+	// turn(-105, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	// eject_b=true;
+	// pros::Task cs_eject_blueTask(eject_blue);
+	// heading_correction_pid.kP = 0;
+	// heading_correction_pid.kI = 0;
+	// heading_correction_pid.kD = 0;
+	// arc_left(64, 700, 1000, 0, 127, M_ARC_MOGO);
+	// turn(180, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	// drive(600);
 	
-	drive(1900, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
+	// turn(71, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	// drive(600, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
+	// turn(110, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	// drive(1400, M_TICKS, std::nullopt, 50, 127, true, M_DRIVE_MOGO);
+	// drive(500, M_TICKS, 800, 0, 60, true, M_DRIVE_MOGO);
+	// drive(-400, M_TICKS, std::nullopt, 50, 127, true,  M_DRIVE_MOGO);
+	// turn(0, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	
+	// drive(1700, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
+	// drive(700, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
 	
 	
 	// eject_b=true;

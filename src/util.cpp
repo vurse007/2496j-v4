@@ -181,27 +181,74 @@ void eject_blue()
             //glb::intake.move(-127);
         sensed=true;    
     }
-    else
-    {
-        cnt=0;
-        sensed=false;
-    }
+
    if (sensed==true)
    { 
     cnt++;
    }
-   if(cnt>7000)
+   
+   if(cnt>7000 && revcnt<6000)
    {
     glb::intake.move(-127);
     revcnt++;
-    
    }
    else
    {
-    
-    revcnt=0;
     glb::intake.move(127);
    }
+   if(revcnt==6000)
+   {
+    sensed=false;
+    cnt=0;
+    revcnt=0;
+   }
+   
+   
+  }
+}
+
+
+
+
+
+
+bool sense_red=false;
+int cnt3=0;
+int revcnt2=0;
+bool eject_r=false;
+void eject_red()
+{
+    glb::colorsort.set_led_pwm(70);
+  while(eject_r)
+  {
+    
+    if((glb::colorsort.get_hue()<40 || glb::colorsort.get_hue()>340) && glb::colorsort.get_hue()<260 && glb::colorsort.get_proximity()>100)
+    {
+            //glb::intake.move(-127);
+        sense_red=true;    
+    }
+
+   if (sense_red==true)
+   { 
+    cnt3++;
+   }
+   
+   if(cnt3>7000 && revcnt2<6000)
+   {
+    glb::intake.move(-127);
+    revcnt2++;
+   }
+   else
+   {
+    glb::intake.move(127);
+   }
+   if(revcnt2==6000)
+   {
+    sense_red=false;
+    cnt3=0;
+    revcnt2=0;
+   }
+   
    
   }
 }
