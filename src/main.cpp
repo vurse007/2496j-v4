@@ -386,13 +386,18 @@ void autonomous() {
 	heading_correction_pid.kP = 0;
 	heading_correction_pid.kI = 0;
 	heading_correction_pid.kD = 0;
-	arc_left(65, 900, 900, 0, 127, M_ARC_MOGO);
+	arc_left(57, 800, 900, 30, 127, M_ARC_MOGO);
 	drive(600);
-	turn(81);
-	drive(500);
-	turn(107);
-	drive(2000, M_TICKS, 2000);
-	drive(-300, M_TICKS, std::nullopt, 0, 50);
+	turn(71, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	drive(500, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
+	turn(107, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	drive(1400, M_TICKS, std::nullopt, 50, 127, true, M_DRIVE_MOGO);
+	drive(500, M_TICKS, 800, 0, 60, true, M_DRIVE_MOGO);
+	drive(-400, M_TICKS, std::nullopt, 0, 127, true,  M_DRIVE_MOGO);
+	turn(0, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	
+	drive(1900, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
+	
 	
 	// eject_b=true;
 	//pros::Task cs_eject_blueTask(eject_blue);
