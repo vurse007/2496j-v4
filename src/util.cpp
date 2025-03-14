@@ -169,12 +169,13 @@ void stallProtection (){
 bool sensed=false;
 int cnt2=0;
 int revcnt=0;
-bool eject_b=true;
+bool eject_b=false;
 void eject_blue()
 {
+    glb::colorsort.set_led_pwm(70);
   while(eject_b)
   {
-    glb::colorsort.set_led_pwm(70);
+    
     if(glb::colorsort.get_hue()>200 && glb::colorsort.get_hue()<260 && glb::colorsort.get_proximity()>100)
     {
             //glb::intake.move(-127);
