@@ -85,7 +85,7 @@ int lbPID = 0;
 double ladyBrownCorrectPosition = 131.00;
 double ladyBrownCorrectPosition_4 = 90.00;
 double ladyBrownCurrentPosition;
-double ladyBrownCorrectPosition_2= 300.00;
+double ladyBrownCorrectPosition_2= 320.00;
 double ladyBrownCorrectPosition_3= 260.00;
 PID ladyBrownPID(2.5,0,0,10, 100, 127);
 
@@ -190,7 +190,7 @@ void eject_blue()
    { 
     cnt++;
    }
-   if(cnt>6000)
+   if(cnt>7000)
    {
     glb::intake.move(-127);
     revcnt++;

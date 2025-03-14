@@ -588,6 +588,8 @@ void arc_left(double target, double radius, std::optional<double> timeout, doubl
 
         if (chain == true && fabs(heading - init_heading) >= trueTheta) break;
 
+        if (arcTimer.targetReached()) break;
+
         pros::delay(5);
     }
     chassis.brake();

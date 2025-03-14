@@ -230,54 +230,54 @@ void initialize() {
 
 
 	//auton selector with lim
-	while (autonFlag == false){
+// 	while (autonFlag == false){
 
-		//no more than five options
-		if (autonSequencer > 5){
-			autonSequencer = 0;
-		}
+// 		//no more than five options
+// 		if (autonSequencer > 5){
+// 			autonSequencer = 0;
+// 		}
 
-		if (autoselect.get_value() == true){
-			delay(100);
-			autonSequencer++;
-			timerStarted = false;
-		}
+// 		if (autoselect.get_value() == true){
+// 			delay(100);
+// 			autonSequencer++;
+// 			timerStarted = false;
+// 		}
 
-		if (autonSequencer == 0){
-			pros::lcd::set_text(2, "No Auto Selected");
-			con.print(0, 0, "No Auto Selected");
-		}
-		else if (autonSequencer == 1){
-			pros::lcd::set_text(2, "Red Goal");
-			con.print(0, 0, "Red Goal");
-		}
-		else if (autonSequencer == 2){
-			pros::lcd::set_text(2, "Blue Goal");
-			con.print(0, 0, "Blue Goal");
-		}
-		else if (autonSequencer == 3){
-			pros::lcd::set_text(2, "Red Ring");
-			con.print(0, 0, "Red Ring");
-		}
-		else if (autonSequencer == 4){
-			pros::lcd::set_text(2, "Blue Ring");
-			con.print(0, 0, "Blue Ring");
-		}
-		else if (autonSequencer == 5){
-			pros::lcd::set_text(2, "Skills");
-			con.print(0, 0, "Skills");
-		}
+// 		if (autonSequencer == 0){
+// 			pros::lcd::set_text(2, "No Auto Selected");
+// 			con.print(0, 0, "No Auto Selected");
+// 		}
+// 		else if (autonSequencer == 1){
+// 			pros::lcd::set_text(2, "Red Goal");
+// 			con.print(0, 0, "Red Goal");
+// 		}
+// 		else if (autonSequencer == 2){
+// 			pros::lcd::set_text(2, "Blue Goal");
+// 			con.print(0, 0, "Blue Goal");
+// 		}
+// 		else if (autonSequencer == 3){
+// 			pros::lcd::set_text(2, "Red Ring");
+// 			con.print(0, 0, "Red Ring");
+// 		}
+// 		else if (autonSequencer == 4){
+// 			pros::lcd::set_text(2, "Blue Ring");
+// 			con.print(0, 0, "Blue Ring");
+// 		}
+// 		else if (autonSequencer == 5){
+// 			pros::lcd::set_text(2, "Skills");
+// 			con.print(0, 0, "Skills");
+// 		}
 		
 
-		if (autonSequencer > 0 && timerStarted == false){
-			autonSelectorTimer.start();
-			timerStarted = true;
-		}
-		else if (autonSelectorTimer.targetReached() == true && timerStarted == true){
-			//if you stayed on one for long enough
-			autonFlag = true;
-		}
-	}
+// 		if (autonSequencer > 0 && timerStarted == false){
+// 			autonSelectorTimer.start();
+// 			timerStarted = true;
+// 		}
+// 		else if (autonSelectorTimer.targetReached() == true && timerStarted == true){
+// 			//if you stayed on one for long enough
+// 			autonFlag = true;
+// 		}
+// 	}
 }
 
 /**
@@ -374,17 +374,29 @@ void autonomous() {
 
 
 	//ring side
-	// drive(350);
-	// turn(60);
-	// lbPID=2;
-	// delay(700);
-	// drive(-1200, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
-	// lbPID=4;
-	// turn(-120, std::nullopt, 5, std::nullopt,M_TURN_MOGO);
-	
+	drive(400, M_TICKS, 1000, 0, 70, true, M_DRIVE_MOGO);
+	turn(62);
+	lbPID=2;
+	delay(700);
+	drive(-1400, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
+	lbPID=4;
+	turn(-115, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
 	eject_b=true;
 	pros::Task cs_eject_blueTask(eject_blue);
-	delay(5000);
+	heading_correction_pid.kP = 0;
+	heading_correction_pid.kI = 0;
+	heading_correction_pid.kD = 0;
+	arc_left(65, 900, 900, 0, 127, M_ARC_MOGO);
+	drive(600);
+	turn(81);
+	drive(500);
+	turn(107);
+	drive(2000, M_TICKS, 2000);
+	drive(-300, M_TICKS, std::nullopt, 0, 50);
+	
+	// eject_b=true;
+	//pros::Task cs_eject_blueTask(eject_blue);
+	// delay(5000);
 	
 }
 
