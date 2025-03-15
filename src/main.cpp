@@ -319,6 +319,55 @@ void competition_initialize() {}
 void autonomous() {
 
 
+	//iain counter blue goal side
+	drive(-950, M_TICKS, 1000,0, 70, true);
+	delay(200);
+	intake.move(127);
+	turn(-115, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	intake.move(0);
+	
+	drive(700, M_TICKS, 1000,0, 70, true, M_DRIVE_MOGO);
+	doinker.set_value(true);
+	delay(200);
+	turn(-140, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(150, M_TICKS, 1000,0, 127, true, M_DRIVE_MOGO);
+	doinker2.set_value(true);
+	delay(300);
+	turn(-115, 500, 0, std::nullopt, M_TURN_MOGO);
+	drive(-1800, M_TICKS, 1000,0,127, true, M_DRIVE_MOGO);
+	doinker.set_value(false);
+	doinker2.set_value(false);
+	delay(200);
+	turn(-90, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	eject_r=true;
+	pros::Task cs_eject_redTask(eject_red);
+	drive(700, M_TICKS, 1000,0, 127, true, M_DRIVE_MOGO);
+	turn(150, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(700, M_TICKS, 1000,0, 127, true, M_DRIVE_MOGO);
+	turn(50, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	drive(1300, M_TICKS, 1000,0, 127, true, M_DRIVE_MOGO);
+	drive(300, M_TICKS, 1500,0, 30, true, M_DRIVE_MOGO);
+	delay(500);
+	turn(-110, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
+	mogo.set_value(false);
+	lbPID=3;
+	drive(1500, M_TICKS, 1000,0, 127, true, M_DRIVE_MOGO);
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
 	// if (autonSequencer == 0){
 	// 	//if u didnt press the ls, skip auto
 	// }
@@ -343,7 +392,7 @@ void autonomous() {
 	// 	skills();
 	// }
 
-	blueRing();
+	//blueRing();
 	
 }
 
