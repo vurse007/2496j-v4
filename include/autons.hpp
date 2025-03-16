@@ -13,3 +13,7 @@ void blueGoal();
 void redRing();
 
 void blueRing();
+
+void iainRed();
+
+void iainBlue();
