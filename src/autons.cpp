@@ -209,7 +209,7 @@ void skills(){
 	intake.move(127);
 	//lbPID=1;
 	drive(2950, M_TICKS, std::nullopt, 20, 127, false);
-	drive(415, M_TICKS, std::nullopt, 0, 50, false);
+	drive(415, M_TICKS, std::nullopt, 0, 70, false);
 	intake.move(0);
 	turn(120);
 	
@@ -228,7 +228,7 @@ void skills(){
 	intake.move(0);
 
 	drive(500, M_TICKS, std::nullopt, 10);
-	drive(360, M_TICKS, std::nullopt, 0, 50);
+	drive(360, M_TICKS, std::nullopt, 0, 60);
 	
 	turn(90);
 	
@@ -253,7 +253,7 @@ void skills(){
 	intake.move(0);
 	drive(2300, M_TICKS, std::nullopt, 10, 127, true, M_DRIVE_MOGO);
 	intake.move(127);
-	drive(1610, M_TICKS, std::nullopt, 0, 60, true, M_DRIVE_MOGO);
+	drive(1560, M_TICKS, std::nullopt, 0, 60, true, M_DRIVE_MOGO);
 	turn(179, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
 	drive(300, M_TICKS, 500, 0, 127, true, M_DRIVE_MOGO);
 	turn(-45, std::nullopt, 0, std::nullopt, M_TURN_MOGO);
@@ -285,21 +285,21 @@ void skills(){
 	lbPID=0;
 	//lbPID=4;
 	intake.move(0);
-	drive(-600, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
+	drive(-550, M_TICKS, std::nullopt, 0, 70, true, M_DRIVE_MOGO);
 	
 	turn(0, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
 	intake.move(127);
 	drive(1850, M_TICKS, std::nullopt, 0, 127, true, M_DRIVE_MOGO);
-	turn(-90, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
-	drive(400, M_TICKS, std::nullopt, 20, 127, true, M_DRIVE_MOGO);
+	// turn(-90, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	// drive(400, M_TICKS, std::nullopt, 20, 127, true, M_DRIVE_MOGO);
 	
-	turn(165, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
+	turn(135, std::nullopt, 0, std::nullopt,M_TURN_MOGO);
 	intake.move(-127);
 	mogo.set_value(false);
 	delay(200);
 
 
-	drive(-500, M_TICKS, std::nullopt, 0, 127, false, M_DRIVE_MOGO);
+	drive(-600, M_TICKS, std::nullopt, 5, 127, false, M_DRIVE_MOGO);
 	drive(300, M_TICKS, std::nullopt, 0, 127, false, M_DRIVE_MOGO);
 
 }

@@ -349,7 +349,7 @@ void autonomous() {
 	// 	skills();
 	// }
 
-	skills();
+	redRing();
 	
 }
 
